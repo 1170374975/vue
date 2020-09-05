@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <!-- 被vue控制的区域，我们称为模板 -->
+    <div id="app">
+        <!-- 插值表达式{{ js }}：
+            可以填的内容：数据(到data里找，要写经过声明的数据，否则报错)、表达式、数字、字符串、boolean、array、object、undefined/null
+            {{msg}}是直接把data里msg的数据内容替换掉
+        -->
+        {{ msg }} 
+        {{ 5201314 }}
+        {{ ['123', 'abc', '@#￥'] }}
+        {{ {name: 'wang', age: '18'} }}
+        {{ 2-1 }}
+        {{ !0 }}
+        {{ 1+1 === 3 ? 'false': 'true' }}
+    </div>
+    
+
+    <script>
+        // const oDiv = document.getElementById('app');
+        // const data = '存放要用到的数据';
+        // oDiv.innerText = data;
+
+
+        //vue控制id为app的区域的方法：（一定要用其中一个）
+        //element 元素， 1、 el: '#app'   2、vm.$mount('#app')，手动挂载
+    
+        const vm = new Vue({
+            el: '#app',   //控制id为app的区域
+            data: {
+                //msg存放要用到的数据，可以直接在el里插入{{msg}}-->插值表达式
+                msg: '存放要用到的数据'
+            }
+        });
+
+        //vm.$mount('#app');//控制id为app的区域，手动挂载
+    </script>
+</body>
+</html>
