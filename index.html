@@ -7,34 +7,25 @@
     <script src="./vue.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- {{ msg }} -->
-        <!-- {{ MrDeng.weight }} -->
-        <!-- {{ MrDeng.height }} -->
-        {{ arr }}
-        {{ dengFamily }}
-        <!-- {{ MrDeng }} -->
+    <input type="text">
+    <button>点击</button>
+    <div id="app" >
+        <div v-html='msg'></div>
     </div>
+
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                msg: '123123123',
-                MrDeng: {
-                    name: '邓旭明',
-                    age: '18',
-                    height: '170cm'
-                },
-                arr: [1, 2, 3],
-                dengFamily: ['邓哥', '小刘', '小宝']
+                msg: 'v-pre指令，跳过元素和它的子元素的编译过程'
             }
-            
         })
-        vm.MrDeng.height = '180cm'
-
-
+        const oInput = document.getElementsByTagName('input')[0];
+        const oBut = document.getElementsByTagName('button')[0];
+        oBut.onclick = function () {
+            vm.msg = oInput.value;
+        }
     </script>
-
 </body>
 </html>
