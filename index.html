@@ -7,31 +7,87 @@
     <script src="./vue.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- <div v-if="type === 'A'">aaaaaa</div>
-        <div v-else-if="type === 'B'">bbbbb</div>
-        <div v-else-if="type === 'C'">ccccc</div>
-        <div v-else>12345</div> -->
+   <div id="app">
+       <!-- 绑定动态特姓名 有版本要求，为2.6.0+ -->
+        <!-- <div v-bind:[attr]="type" b="bbb" c="ccc"></div> -->
 
-        <template v-if="show">
-            <div>杉杉</div>
-            <div>杉杉</div>
-            <div>杉杉</div>
-            <div>杉杉</div>
-            <div>杉杉</div>
-        </template>
-    </div>
+        <!-- 缩写 -->
+        <!-- <div :[attr]="type"></div> -->
+
+        <!-- 一个v-bind绑定多个特性(v-bind无参数且绑定一个对象，键值对为特性) -->
+        <!-- <div v-bind="{name: xx, age:'18', height: '163cm'}"></div> -->
+
+        <!-- 动态绑定img的src地址，拼接字符串 -->
+        <!-- <img :src="'https://' + imgUrl" alt=""> -->
+
+        <!-- 绑定class 
+            对象语法：当对象键值对的value为真，则对应的key值就会被当作class添加到元素上去-->
+        <!-- <div :class="{yellow: true}"></div>
+        <div :class="{red: isRed}">aaa</div> -->
+
+        <!-- 绑定class
+        数组语法：动态的把class列表，绑定给class
+            可以在数组语法中，使用对象语法
+        -->
+        <!-- <div :class="['red', 'green']"></div>
+        <div :class="[red, green]"></div>
+        <div :class="[isRed ? red : '', green]"></div>
+        <div :class="[{redClass: isRed}, green]"></div> -->
+
+        <!-- 绑定style -->
+        <!-- <div :style="{color: 'red', width: '100px', backgroundColor: 'yellow'}">11111</div>
+        <div :style="{color: 'red', width: '100px', 'background-color': 'yellow'}">2222</div> -->
+
+        <!-- 把样式写在data中 ,自动添加隐形前缀:例-ms-transform -->
+        <!-- <div :style="styleObjA">3333</div>
+        <div :style="[styleObjA, styleObjB]">444444</div> -->
+
+        <!-- 多重值：常用于提供多个带前缀的值，只会渲染数组中最后一个被浏览器支持的值 -->
+        <!-- <div :style="{display: ['-webkit-box', '-ms--flexbox', 'flex']}">55555</div> -->
 
 
-    <script>
-        const vm = new Vue({
-            el: '#app',
-            data: {
-                msg: '杉杉最美丽',
-                type: 'c',
-                show: 0
-            }
-        })
-    </script>
+        <!-- 修饰符modifier    v-bind.xx ,html特性会将大写字母转小写-->
+        <!-- <svg viewBox="0 0 100 100"></svg> -->
+        
+        <!-- 不写.camel，会大写转小写，需要用camel,解决大写转小写的问题 -->
+        <!-- <svg :viewBox="viewBox"></svg>
+        <svg :view-box.camel="viewBox"></svg> -->
+
+        <!-- prop 用于绑定dom属性，把杉杉填充到div中-->
+        <div :text-content.prop="'杉杉'"></div>
+   </div>
+
+   <div id="demo"></div>
+
+   <script>
+    //查看dom属性都有哪些
+        const demo = document.getElementById('demo');
+       for(let key in demo){
+        console.log(key);
+       }
+       const vm = new Vue({
+           el: '#app',
+           data: {  
+               type: 'AAA',
+                attr: 'a',
+                xx: 'xxx',
+                ss: 'sss',
+                imgUrl: 'ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2567670815,24101428&fm=26&gp=0.jpg',
+                isRed: true,
+                red: 'redClass',
+                green: 'greenClass',
+                styleObjA: {
+                    color: 'red',
+                    width: '100px',
+                    backgroundColor: 'yellow',
+                },
+                styleObjB: {
+                    cursor: 'pointer',
+                    transform: 'translateX(90px)'
+                },
+                viewBox: '0 0 100 100'
+           }
+       })
+   </script>
 </body>
 </html>
