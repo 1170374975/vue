@@ -7,10 +7,19 @@
     <script src="./vue.js"></script>
 </head>
 <body>
-    <input type="text">
-    <button>点击</button>
-    <div id="app" >
-        <div v-html='msg'></div>
+    <div id="app">
+        <!-- <div v-if="type === 'A'">aaaaaa</div>
+        <div v-else-if="type === 'B'">bbbbb</div>
+        <div v-else-if="type === 'C'">ccccc</div>
+        <div v-else>12345</div> -->
+
+        <template v-if="show">
+            <div>杉杉</div>
+            <div>杉杉</div>
+            <div>杉杉</div>
+            <div>杉杉</div>
+            <div>杉杉</div>
+        </template>
     </div>
 
 
@@ -18,14 +27,11 @@
         const vm = new Vue({
             el: '#app',
             data: {
-                msg: 'v-pre指令，跳过元素和它的子元素的编译过程'
+                msg: '杉杉最美丽',
+                type: 'c',
+                show: 0
             }
         })
-        const oInput = document.getElementsByTagName('input')[0];
-        const oBut = document.getElementsByTagName('button')[0];
-        oBut.onclick = function () {
-            vm.msg = oInput.value;
-        }
     </script>
 </body>
 </html>
