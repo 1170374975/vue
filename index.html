@@ -8,70 +8,81 @@
 </head>
 <body>
     <div id="app">
-        <!-- 事件修饰符 -->
-        <!-- <div @click="alert('div')" :style="{backgroundColor:'red'}">
-            <button @click="alert('button')">点击</button>
-            .stop阻止事件冒泡
-            <button @click.stop="alert('button')">点击</button>
-        </div> -->
+        <ul>
+<!-- v-for 使用数组的情况 -->
+            <!-- <li v-for="person in persons">
+                {{ person }}
+            </li> -->
+            <!-- <li v-for="(person, index) in persons">
+                {{ person }}--{{ index }}
+            </li> -->
 
-        <!--.prevent 阻止所有的默认事件，例如：提交时会自动刷新页面 -->
-        <!-- <form @submit.prevent="onSubmit">
-            <input type="submit">
-        </form> -->
-        
-        <!-- .capture事件捕获,点击按钮，先触发div事件，再触发按钮事件 -->
-        <!-- <div @click.capture="alert('div')" :style="{backgroundColor: 'red'}">
-            <button @click="alert('button')">点击</button>
-        </div> -->
-
-        <!-- .self是点击自身的时候，才会触发事件，不冒泡 -->
-        <!-- <div @click.self="alert('div')" :style="{backgroundColor:'red'}">
-            <button @click="alert('button')">点击</button>
-        </div> -->
-
-        <!-- .once只触发一次回调 -->
-        <!-- <div @click.once="alert('div')" :style="{backgroundColor: 'red'}">
-            <button @click.once="alert('button')">点击</button>
-        </div> -->
+            <!-- <li v-for="(item, index) in items">
+                {{ item.name }} -- {{ index }}
+            </li> -->
 
 
-        <!-- 按键修饰符 -->
-        <!-- 监听按键抬起事件 .enter是按enter抬起时触发事件-->
-        <!-- <input type="text" @keyup.enter="onSubmit"> -->
-        <!-- 按大写锁定键时,触发事件 -->
-        <!-- <input type="text" @keyup.caps-lock="onSubmit"> -->
-        <!-- <input type="text" @keyup.up="onSubmit">
-        <input type="text" @keyup.arrow-up="onSubmit"> -->
+            <!-- v-for 使用对象 -->
+            <!-- <li v-for="item in shan">
+                {{ item }}
+            </li> -->
+            <!-- value值, 第二个参数是key , 第三个参数是索引-->
+            <!-- <li v-for="(value, key, index) in shan">
+                {{ value }}  -- {{ key }} -- {{ index }}
+            </li> -->
 
-        <!-- <input type="text" @keyup.v="onSubmit"> -->
+            <!-- 遍历数字 -->
+            <!-- <li v-for="num in 10">
+                {{ num }}
+            </li> -->
+            <!-- 遍历字符串 -->
+            <!-- <li v-for="str in 'shanshan'">
+                {{ str }}
+            </li> -->
 
+            <!-- 循环一段包含多个元素的内容 -->
+    <!--  <template v-for="item in items">
+                <li> {{ item.name }} </li>
+                <span>{{ item.age }}</span>
+            </template> -->
 
-        <!-- 系统键修饰符-->
-        
+            <!-- Vue就地更新的策略,使用key使Vue不在采用就地更新的策略-->
+            <!-- <li v-for="(item, index) in items" :key="item.name">
+                {{ item.name }}
+                <input type="text">
+                <button @click="handleClick(index)">下移</button>
+            </li> -->
+            <!-- 切换,加上key之后,不会复用input里的输入内容 -->
+            <button @click="show = !show">{{ show ? '显示' : '隐藏' }}</button>
+            <input type="text" v-if="show" key="a">
+            <input type="text" v-else key="b">
+            
+        </ul>
     </div>
-     
 
     <script>
-        //设置 按键v 的别名
-        Vue.config.keyCodes.v = 86;
-
         const vm = new Vue({
             el: '#app',
             data: {
-
+                persons: ['杉杉', '思彤', '成哥', '邓哥'],
+                items: [
+                    { name: '杉杉', age: 18},
+                    { name: '思彤', age: 18},
+                    { name: '成哥', age: 18},
+                    { name: '邓哥', age: 18}
+                ],
+                shan: {
+                    name: '杉杉',
+                    age: 18,
+                    height: '163cm'
+                },
+                show: true
             },
             methods: {
-                alert(str){
-                    alert(str);
-                },
-                onSubmit(){
-                    console.log('a');
-                },
-                handleClick(){
-
-                },
-                
+                handleClick(index){
+                    const deleteItem = this.items.splice(index, 1);//截取掉当前的这个数据
+                    this.items.splice(index + 1, 0, ...deleteItem);//把截取的数据,插入到里面,(splice截取之后返回的是数组,需要把数组展开成对象)
+                }
             }
         })
     </script>
