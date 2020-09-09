@@ -8,42 +8,71 @@
 </head>
 <body>
     <div id="app">
-        <!-- <button v-on:click="counter += 1">点击+1</button> -->
-        <!-- <button v-on:click="addCounter">点击+1</button> -->
-        <!-- 在传参的时候，使用事件对象，需要用$event -->
-        <!-- <button v-on:click="addCounter(5, $event)">点击</button> -->
+        <!-- 事件修饰符 -->
+        <!-- <div @click="alert('div')" :style="{backgroundColor:'red'}">
+            <button @click="alert('button')">点击</button>
+            .stop阻止事件冒泡
+            <button @click.stop="alert('button')">点击</button>
+        </div> -->
 
-        <!-- 绑定动态的事件 -->
-        <!-- <button v-on:[event]="addCounter(5, $event)">点击</button> -->
+        <!--.prevent 阻止所有的默认事件，例如：提交时会自动刷新页面 -->
+        <!-- <form @submit.prevent="onSubmit">
+            <input type="submit">
+        </form> -->
+        
+        <!-- .capture事件捕获,点击按钮，先触发div事件，再触发按钮事件 -->
+        <!-- <div @click.capture="alert('div')" :style="{backgroundColor: 'red'}">
+            <button @click="alert('button')">点击</button>
+        </div> -->
 
-        <!-- 使用这种对象的方式，不能传参 -->
-        <!-- <button v-on="{click: addCounter}">点击</button> -->
+        <!-- .self是点击自身的时候，才会触发事件，不冒泡 -->
+        <!-- <div @click.self="alert('div')" :style="{backgroundColor:'red'}">
+            <button @click="alert('button')">点击</button>
+        </div> -->
 
-        <!-- v-on缩写 @   @click @input等-->
-        <button @click="addCounter(5, $event)">点击</button>
+        <!-- .once只触发一次回调 -->
+        <!-- <div @click.once="alert('div')" :style="{backgroundColor: 'red'}">
+            <button @click.once="alert('button')">点击</button>
+        </div> -->
 
-        <p>按钮被点击了{{ counter }}次</p>
+
+        <!-- 按键修饰符 -->
+        <!-- 监听按键抬起事件 .enter是按enter抬起时触发事件-->
+        <!-- <input type="text" @keyup.enter="onSubmit"> -->
+        <!-- 按大写锁定键时,触发事件 -->
+        <!-- <input type="text" @keyup.caps-lock="onSubmit"> -->
+        <!-- <input type="text" @keyup.up="onSubmit">
+        <input type="text" @keyup.arrow-up="onSubmit"> -->
+
+        <!-- <input type="text" @keyup.v="onSubmit"> -->
+
+
+        <!-- 系统键修饰符-->
+        
     </div>
+     
 
     <script>
+        //设置 按键v 的别名
+        Vue.config.keyCodes.v = 86;
+
         const vm = new Vue({
             el: '#app',
             data: {
-                counter: 0,
-                event: 'click'
+
             },
             methods: {
-                addCounter(num, e){
-                    //this  是Vue的实例对象vm
-                    this.counter += num;
-                    console.log(e.target);//事件对象
+                alert(str){
+                    alert(str);
+                },
+                onSubmit(){
+                    console.log('a');
+                },
+                handleClick(){
 
                 },
-                a(){
-                    console.log('a');
-                }
+                
             }
-
         })
     </script>
 </body>
