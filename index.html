@@ -1,90 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>练习_仿淘宝商品筛选</title>
+    <link rel="stylesheet" href="./index.css">
     <script src="./vue.js"></script>
 </head>
+
 <body>
     <div id="app">
-        <ul>
-<!-- v-for 使用数组的情况 -->
-            <!-- <li v-for="person in persons">
-                {{ person }}
-            </li> -->
-            <!-- <li v-for="(person, index) in persons">
-                {{ person }}--{{ index }}
-            </li> -->
+        <div class="goods" v-for="(goods, goodsIndex) in goodsList" :key="goods.id">
+            <div class="title">{{ goods.title }}:</div>
+            <ul class="type-list">
 
-            <!-- <li v-for="(item, index) in items">
-                {{ item.name }} -- {{ index }}
-            </li> -->
+                <li class="type" :class="{
+                        active: typeIndex === goods.index
+                    }" v-for="(type,typeIndex) in goods.typeList" :key="type"
+                    @click="addFilterhandle(typeIndex,goods, type, goodsIndex)">
+                    {{ type }}
+                </li>
+            </ul>
+        </div>
+        <!-- 过滤条件 -->
+        <div class="choose-type">
+            <div>已选条件:</div>
+            <span class="no-goods" v-if="!showFilterGoods">
+                暂时没有选择过滤条件
+            </span>
+            <ul class="filter-list" v-else>
+                <li v-for="(goods, goodsKey) in filterObj">
+                    {{ goods }}
+                    <span class="iconfont delete-goods" @click="deleteFilterGoods(goodsKey)">&#xe61a;</span>
+                </li>
+            </ul>
 
-
-            <!-- v-for 使用对象 -->
-            <!-- <li v-for="item in shan">
-                {{ item }}
-            </li> -->
-            <!-- value值, 第二个参数是key , 第三个参数是索引-->
-            <!-- <li v-for="(value, key, index) in shan">
-                {{ value }}  -- {{ key }} -- {{ index }}
-            </li> -->
-
-            <!-- 遍历数字 -->
-            <!-- <li v-for="num in 10">
-                {{ num }}
-            </li> -->
-            <!-- 遍历字符串 -->
-            <!-- <li v-for="str in 'shanshan'">
-                {{ str }}
-            </li> -->
-
-            <!-- 循环一段包含多个元素的内容 -->
-    <!--  <template v-for="item in items">
-                <li> {{ item.name }} </li>
-                <span>{{ item.age }}</span>
-            </template> -->
-
-            <!-- Vue就地更新的策略,使用key使Vue不在采用就地更新的策略-->
-            <!-- <li v-for="(item, index) in items" :key="item.name">
-                {{ item.name }}
-                <input type="text">
-                <button @click="handleClick(index)">下移</button>
-            </li> -->
-            <!-- 切换,加上key之后,不会复用input里的输入内容 -->
-            <button @click="show = !show">{{ show ? '显示' : '隐藏' }}</button>
-            <input type="text" v-if="show" key="a">
-            <input type="text" v-else key="b">
-            
-        </ul>
+        </div>
     </div>
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                persons: ['杉杉', '思彤', '成哥', '邓哥'],
-                items: [
-                    { name: '杉杉', age: 18},
-                    { name: '思彤', age: 18},
-                    { name: '成哥', age: 18},
-                    { name: '邓哥', age: 18}
-                ],
-                shan: {
-                    name: '杉杉',
-                    age: 18,
-                    height: '163cm'
-                },
-                show: true
+                // 这个对象是已选择的条件
+                filterObj: {},
+                //判断是否显示"暂时没有选择过滤条件"这几个字
+                showFilterGoods: false,
+                goodsList: [
+                    {
+                        title: '上装',
+                        typeList: ['全部', '针织衫', '毛呢外套', 'T恤', '羽绒服', '棉衣', '卫衣', '风衣'],
+                        id: 1,
+                        // index: 0
+                    },
+                    {
+                        title: '裤装',
+                        typeList: ['全部', '牛仔裤', '小脚/铅笔裤', '休闲裤', '打底裤', '哈伦裤'],
+                        id: 2,
+                    },
+                    {
+                        title: '裙装',
+                        typeList: ['全部', '连衣裙', '半身裙', '长袖连衣裙', '中长款连衣裙'],
+                        id: 3,
+                    }
+                ]
             },
             methods: {
-                handleClick(index){
-                    const deleteItem = this.items.splice(index, 1);//截取掉当前的这个数据
-                    this.items.splice(index + 1, 0, ...deleteItem);//把截取的数据,插入到里面,(splice截取之后返回的是数组,需要把数组展开成对象)
+                // 监听点击事件(点击的索引, 哪一列, 哪个商品, 点击商品是哪一列的索引)
+                addFilterhandle(typeIndex, goods, type, goodsIndex) {
+                    if (type === '全部') {
+                        return; //点击全部的时候,什么都不做
+                    }
+                    //点击其他商品时,不显示"暂时没有选择过滤条件"这几个字
+                    this.showFilterGoods = true;
+                    goods.index = typeIndex;//设置点击的索引,设置.active
+
+                    //点击的商品,添加到对象中,每一行只能点击一个
+                    //$set(要改谁，改它的什么，改成啥)
+                    vm.$set(this.filterObj, goodsIndex, type);
+
+                    // console.log(this.filterObj)
+
+                },
+                //点击x时,删除(删除项的索引)
+                deleteFilterGoods(goodsKey) {
+                    this.$delete(this.filterObj, goodsKey);
+                    //数组当中第goodsKey项,设置index为0(选中全部)
+                    this.goodsList[goodsKey].index = 0;
+                    //判断是否显示"暂时没有选择过滤条件"这几个字
+                    this.changeShowFilter();
+                },
+                //判断filterObj是否为空,设置showFilterGoods为false或true
+                changeShowFilter() {
+                    //判断是否为'{}'  说明是空对象
+                    const filterObjStr = JSON.stringify(this.filterObj);
+                    // console.log(filterObjStr);
+                    //是空对象,就设置为false, 不是空对象为true
+                    this.showFilterGoods = filterObjStr !== '{}';
+
                 }
             }
+
         })
+        // 给数组中的每一项,都添加一个属性index,初始值为0,根据index设置.active
+        //$set(改谁, 改什么, 改后的值)方法,重新渲染页面
+        // vm.goodsList.forEach(item => item.index = 0)
+        vm.goodsList.forEach(item => vm.$set(item, 'index', 0));
+        // console.log(vm.goodsList)
     </script>
 </body>
+
 </html>
