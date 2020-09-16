@@ -10,16 +10,79 @@
 
 <body>
     <div id="app">
+        <!-- v-model -->
+        <input type="text" v-model="msg">
+        <!-- input type=text监听输入事件@input和绑定value事件:value的结合
+        <input type="text" @input="msg = $event.target.value" :value="msg"> -->
 
+        <!-- 单个复选框checkbox 绑定布尔值，v-model="boolean"-->
+        <input type="checkbox" v-model="checked">
+        <br>
+        
+        <!-- 多个复选框,v-model会拿到value的值，放到checkList里 -->
+        <!-- 复选框 -->
+        <input type="checkbox" id="cheng" value="成哥" v-model="checkList">
+        <label for="cheng">成哥</label>
+        <input type="checkbox" id="deng" value="邓哥" v-model="checkList">
+        <label for="deng">邓哥</label>
+        <input type="checkbox" id="tong" value="思彤哥" v-model="checkList">
+        <label for="tong">思彤哥</label>
+            <br>
+
+        <!-- 单选框 会把value赋值给绑定的数据-->
+        <div>单选框</div>
+        <input type="radio" id="cheng1" value="成哥" v-model="picked">
+        <label for="cheng1">成哥</label>
+        <input type="radio" id="deng1" value="邓哥" v-model="picked">
+        <label for="deng1">邓哥</label>
+        <input type="radio" id="tong1" value="思彤哥" v-model="picked">
+        <label for="tong1">思彤哥</label>
+        
+
+        <!-- 多行文本textarea -->
+        <textarea name="" id="" cols="30" rows="10" v-model="multipleText"></textarea>
+
+        <br>
+        <!-- 下拉列表select ,单选的情况-->
+        <select name="" id="" v-model="select">
+            <option value="请选择" disabled>请选择</option>
+            <option value="成哥">成哥</option>
+            <option value="邓哥">邓哥</option>
+            <option value="思彤哥">思彤哥</option>
+        </select>
+
+        <!-- 下拉列表select, 多选的情况 -->
+        <select name="" id="" v-model="selectList" multiple>
+            <option value="成哥">成哥</option>
+            <option value="邓哥">邓哥</option>
+            <option value="思彤哥">思彤哥</option>
+        </select>
+
+
+        <!-- 修饰符 .lazy 在change事件触发后，同步输入框的值和数据-->
+        <input type="text" v-model.lazy="msg">
+        <!-- 修饰符 .number将输入框的值，自动转为number类型（typeof vm.msg）-->
+        <input type="text" v-model.number="msg">
+        <!-- 修饰符 .trim自动过滤用户输入的首尾空白字符 -->
+        <input type="text" v-model.trim="msg">
     </div>
 
     <script>
         const vm = new Vue({
             el: '#app',
-            data: {
-
+            data: { 
+                msg: 'hello world',
+                checked: true,
+                checkList: [],
+                picked: '',
+                multipleText: 'hello, 你好',
+                select: '请选择',
+                selectList: []
             }
         })
+        setTimeout(() => {
+            console.log(vm.msg);
+        }, 5000)
     </script>
 </body>
 
