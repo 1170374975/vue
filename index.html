@@ -4,111 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练习_toDoList</title>
-    <link rel="stylesheet" href="./index.css">
+    <title>14.v-model指令</title>
     <script src="./vue.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <div class="header">
-            <div class="container">
-                <div class="logo">toDoList</div>
-                <div class="input-area">
-                    <input type="text" @input="handleInput" :value="curMask">
-                    <button @click="addMask">添加</button>
-                </div>
-            </div>
-        </div>
 
-        <div class="container">
-            <h2>
-                <span>正在进行</span>
-                <span class="mask-num">{{ needDoList.length }}</span>
-            </h2>
-            <ul class="mask-list">
-                <li
-                    v-for="(mask,index) in needDoList"
-                    :key="mask.id" 
-                >
-                    <div>
-                        <!-- 添加key值，不采取就地更新策略 -->
-                        <input type="checkbox" @click="doCheck(index, needDoList, completeList)">
-                        <span>{{ mask.title }}</span>
-                    </div>
-                    <button @click="deleteMask(index, needDoList)">删除</button>
-                </li>
-            </ul>
-        </div>
-
-        <div class="container">
-            <h2>
-                <span>已经完成</span>
-                <span class="mask-num">{{ completeList.length }}</span>
-            </h2>
-            <ul class="mask-list complete-list">
-                <li 
-                    v-for="(mask, index) in completeList"
-                    :key="mask.id"
-                >
-                    <div>
-                        <input type="checkbox" @click="doCheck(index, completeList, needDoList)">
-                        <span>{{ mask.title }}</span>
-                    </div>
-                    <button @click="deleteMask(index, completeList)">删除</button>
-                </li>
-            </ul>
-        </div>
     </div>
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                //当前正在输入的内容
-                curMask: '',
-                //需要做的事情列表
-                needDoList: [],
-                //已经完成的事情列表
-                completeList: []
-            },
-            
-            methods: {
-                // 监听输入框input事件
-                handleInput(e) {
-                    //拿到input的输入值
-                    // console.log(e.target.value);
-                    this.curMask = e.target.value;
 
-
-                },
-                //添加按钮的点击事件
-                addMask() {
-                    if(this.curMask === '') {
-                        return ; 
-                    }
-                    // [{title: '吃饭', id: 0},{title: '吃饭', id: 1}]
-                    this.needDoList.push({
-                        title: this.curMask,
-                        id: Math.random()
-                    });
-                    // console.log(this.needDoList);
-                    //添加到列表之后，输入框内容为空
-                    this.curMask = '';
-                },
-                //点击checkbox事件（点击的是哪一项，从哪个列表删除,添加到哪个列表）
-                doCheck(index, deleteList, addList) {
-                    //把点击的那项截取出来
-                   const mask = deleteList.splice(index, 1);
-                //    console.log(completeMask[0]);
-                    //加入到已经完成列表
-                    // addList.push(completeMask[0]);
-                    addList.push(...mask);
-                },
-                //点击删除按钮事件(索引，从哪个列表删除)
-                deleteMask(index, deleteList) {
-                    deleteList.splice(index, 1);
-                }
             }
         })
     </script>
