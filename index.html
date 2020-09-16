@@ -4,38 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练习_仿淘宝商品筛选</title>
+    <title>练习_toDoList</title>
     <link rel="stylesheet" href="./index.css">
     <script src="./vue.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <div class="goods" v-for="(goods, goodsIndex) in goodsList" :key="goods.id">
-            <div class="title">{{ goods.title }}:</div>
-            <ul class="type-list">
+        <div class="header">
+            <div class="container">
+                <div class="logo">toDoList</div>
+                <div class="input-area">
+                    <input type="text" @input="handleInput" :value="curMask">
+                    <button @click="addMask">添加</button>
+                </div>
+            </div>
+        </div>
 
-                <li class="type" :class="{
-                        active: typeIndex === goods.index
-                    }" v-for="(type,typeIndex) in goods.typeList" :key="type"
-                    @click="addFilterhandle(typeIndex,goods, type, goodsIndex)">
-                    {{ type }}
+        <div class="container">
+            <h2>
+                <span>正在进行</span>
+                <span class="mask-num">{{ needDoList.length }}</span>
+            </h2>
+            <ul class="mask-list">
+                <li
+                    v-for="(mask,index) in needDoList"
+                    :key="mask.id" 
+                >
+                    <div>
+                        <!-- 添加key值，不采取就地更新策略 -->
+                        <input type="checkbox" @click="doCheck(index, needDoList, completeList)">
+                        <span>{{ mask.title }}</span>
+                    </div>
+                    <button @click="deleteMask(index, needDoList)">删除</button>
                 </li>
             </ul>
         </div>
-        <!-- 过滤条件 -->
-        <div class="choose-type">
-            <div>已选条件:</div>
-            <span class="no-goods" v-if="!showFilterGoods">
-                暂时没有选择过滤条件
-            </span>
-            <ul class="filter-list" v-else>
-                <li v-for="(goods, goodsKey) in filterObj">
-                    {{ goods }}
-                    <span class="iconfont delete-goods" @click="deleteFilterGoods(goodsKey)">&#xe61a;</span>
+
+        <div class="container">
+            <h2>
+                <span>已经完成</span>
+                <span class="mask-num">{{ completeList.length }}</span>
+            </h2>
+            <ul class="mask-list complete-list">
+                <li 
+                    v-for="(mask, index) in completeList"
+                    :key="mask.id"
+                >
+                    <div>
+                        <input type="checkbox" @click="doCheck(index, completeList, needDoList)">
+                        <span>{{ mask.title }}</span>
+                    </div>
+                    <button @click="deleteMask(index, completeList)">删除</button>
                 </li>
             </ul>
-
         </div>
     </div>
 
@@ -43,71 +65,52 @@
         const vm = new Vue({
             el: '#app',
             data: {
-                // 这个对象是已选择的条件
-                filterObj: {},
-                //判断是否显示"暂时没有选择过滤条件"这几个字
-                showFilterGoods: false,
-                goodsList: [
-                    {
-                        title: '上装',
-                        typeList: ['全部', '针织衫', '毛呢外套', 'T恤', '羽绒服', '棉衣', '卫衣', '风衣'],
-                        id: 1,
-                        // index: 0
-                    },
-                    {
-                        title: '裤装',
-                        typeList: ['全部', '牛仔裤', '小脚/铅笔裤', '休闲裤', '打底裤', '哈伦裤'],
-                        id: 2,
-                    },
-                    {
-                        title: '裙装',
-                        typeList: ['全部', '连衣裙', '半身裙', '长袖连衣裙', '中长款连衣裙'],
-                        id: 3,
-                    }
-                ]
+                //当前正在输入的内容
+                curMask: '',
+                //需要做的事情列表
+                needDoList: [],
+                //已经完成的事情列表
+                completeList: []
             },
+            
             methods: {
-                // 监听点击事件(点击的索引, 哪一列, 哪个商品, 点击商品是哪一列的索引)
-                addFilterhandle(typeIndex, goods, type, goodsIndex) {
-                    if (type === '全部') {
-                        return; //点击全部的时候,什么都不做
+                // 监听输入框input事件
+                handleInput(e) {
+                    //拿到input的输入值
+                    // console.log(e.target.value);
+                    this.curMask = e.target.value;
+
+
+                },
+                //添加按钮的点击事件
+                addMask() {
+                    if(this.curMask === '') {
+                        return ; 
                     }
-                    //点击其他商品时,不显示"暂时没有选择过滤条件"这几个字
-                    this.showFilterGoods = true;
-                    goods.index = typeIndex;//设置点击的索引,设置.active
-
-                    //点击的商品,添加到对象中,每一行只能点击一个
-                    //$set(要改谁，改它的什么，改成啥)
-                    vm.$set(this.filterObj, goodsIndex, type);
-
-                    // console.log(this.filterObj)
-
+                    // [{title: '吃饭', id: 0},{title: '吃饭', id: 1}]
+                    this.needDoList.push({
+                        title: this.curMask,
+                        id: Math.random()
+                    });
+                    // console.log(this.needDoList);
+                    //添加到列表之后，输入框内容为空
+                    this.curMask = '';
                 },
-                //点击x时,删除(删除项的索引)
-                deleteFilterGoods(goodsKey) {
-                    this.$delete(this.filterObj, goodsKey);
-                    //数组当中第goodsKey项,设置index为0(选中全部)
-                    this.goodsList[goodsKey].index = 0;
-                    //判断是否显示"暂时没有选择过滤条件"这几个字
-                    this.changeShowFilter();
+                //点击checkbox事件（点击的是哪一项，从哪个列表删除,添加到哪个列表）
+                doCheck(index, deleteList, addList) {
+                    //把点击的那项截取出来
+                   const mask = deleteList.splice(index, 1);
+                //    console.log(completeMask[0]);
+                    //加入到已经完成列表
+                    // addList.push(completeMask[0]);
+                    addList.push(...mask);
                 },
-                //判断filterObj是否为空,设置showFilterGoods为false或true
-                changeShowFilter() {
-                    //判断是否为'{}'  说明是空对象
-                    const filterObjStr = JSON.stringify(this.filterObj);
-                    // console.log(filterObjStr);
-                    //是空对象,就设置为false, 不是空对象为true
-                    this.showFilterGoods = filterObjStr !== '{}';
-
+                //点击删除按钮事件(索引，从哪个列表删除)
+                deleteMask(index, deleteList) {
+                    deleteList.splice(index, 1);
                 }
             }
-
         })
-        // 给数组中的每一项,都添加一个属性index,初始值为0,根据index设置.active
-        //$set(改谁, 改什么, 改后的值)方法,重新渲染页面
-        // vm.goodsList.forEach(item => item.index = 0)
-        vm.goodsList.forEach(item => vm.$set(item, 'index', 0));
-        // console.log(vm.goodsList)
     </script>
 </body>
 
