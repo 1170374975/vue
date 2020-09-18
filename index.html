@@ -4,77 +4,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>20.侦听器</title>
+    <title>21.练习_仿百度搜索联想</title>
+    <link rel="stylesheet" href="./index.css">
+    <script src="./jquery.js"></script>
     <script src="./vue.js"></script>
 </head>
 
 <body>
     <div id="app">
-        {{ msg }}
-        <br>
-        {{ obj }}
+        <div class="logo">
+            <img src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="百度一下" title="点击一下了解更多">
+        </div>
+
+        <!-- 搜索区域 -->
+        <div class="search-box">
+            <span class="search-area">
+                <!-- input设置最多输入100个字节 
+                    @focus聚焦事件,@blur失焦事件
+                -->
+                <input type="text"
+                    maxlength="100"
+                    v-model="inputVal"
+                    @focus="() => this.inputFocus = true"
+                    @blur="() => this.inputFocus = false"
+                >
+                <span class="icon iconfont">&#xe611;</span>
+            </span>
+            <span class="search-btn">百度一下</span>
+        </div>
+
+        <!-- 搜索的列表 v-show根据表达式之真假值，切换元素的 display CSS属性-->
+        <!-- 当聚焦时,且输入有值的时候,显示列表 -->
+        <ul class="search-list"
+            v-show="inputFocus && searchResList.length"
+        >
+            <li v-for="res in searchResList"
+                :key="res"
+            >{{ res }}</li>
+        </ul>
     </div>
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                msg: '123456',
-                obj: {
-                    name: 'wangni',
-                    age: 18,
-                    looks: 'beautiful'
-                }
+                // input输入的内容
+                inputVal: '',
+                //控制列表的显示和隐藏,初始时隐藏
+                inputFocus: false,
+                //搜索结果的列表
+                searchResList: []
             },
             methods: {
-                msgChange () {
-                    console.log('msg的值改变了')
+                //搜索的结果
+                searchRes (res) {
+                    console.log(res);
+                    this.searchResList = res.s;
                 }
             },
-            //侦听器watch
+            //侦听器
             watch: {
-                //要侦听的数据: 函数 / 字符串(某个方法的名字) / 对象(handler回调函数) / 数组
-                // msg: function (newVal, oldVal) {
-                //     console.log(`newVal:${newVal}`);
-                //     console.log(`oldVal:${oldVal}`);
-                // },
-                //字符串(某个方法的名字)
-                // msg: 'msgChanges',
-                // obj: {
-                //     //handler回调函数
-                //     handler: function () {
-                //         console.log('obj的值改变了')
-                //     },
-                //     deep: true
-                // },
-                //监听obj的name属性
-                // 'obj.name' () {
-                //     console.log('obj.name改变了')
-                // }
+                // 侦听inputVal的值的变化
+                inputVal () {
+                    // console.log(this.inputVal)
+                    $.ajax({
+                        dataType: 'jsonp',
+                        url: 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',
+                        data: {
+                            wd: this.inputVal, //字符串,搜索的文字
+                            cb: 'vm.searchRes' //字符串,callback函数的名字
+                        }
+                    })
 
+                }
             }
-        })
-        // 三个参数时:
-        // vm.$watch('msg', function () {
-        //     console.log('msg的值改变了')
-        // }, {
-        //     deep: true,
-        //     immediate: true
-        // })
-
-        //两个参数
-        // vm.$watch('msg', {
-        //     handler() {},
-        //     deep: Boolean,
-        //     immediate: Boolean
-        // })
-
-        //取消监听unwatch()侦听器函数执行后，会返回一个取消侦听函数，用来停止触发回调：
-        const unwatch = vm.$watch('msg', function (newVal) {
-            if(newVal === '0') {
-                unwatch();
-            }
-            console.log('监听msg');
         })
     </script>
 </body>

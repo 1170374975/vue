@@ -1,0 +1,16 @@
+{
+  "id": "2056863",
+  "name": "练习",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "6237091",
+      "name": "相机",
+      "font_class": "tubiaozhizuo-",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    }
+  ]
+}
