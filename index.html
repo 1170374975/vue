@@ -4,177 +4,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>19.练习_全选商品</title>
-    <link rel="stylesheet" href="./index.css">
+    <title>20.侦听器</title>
     <script src="./vue.js"></script>
 </head>
 
 <body>
-    <!-- 购物车全选商品 -->
     <div id="app">
-        <!-- 商家名称 -->
-        <div class="store">
-            <input type="checkbox" 
-                class="select-all"
-                v-model="checkedAll"
-            >
-            <span class="store-name">渡一教育web前端</span>
-        </div>
-        <!-- 课程 -->
-        <ul class="course-list">
-            <li class="course"
-                v-for="course in courseList"
-                :key="course.id"
-            >
-                <input type="checkbox" 
-                    class="course-radio"
-                    v-model="course.checked"
-                >
-                <div class="poster">
-                    <img :src="course.poster" :alt="course.title">
-                </div>
-                <div class="content">
-                    <!-- 商品标题 -->
-                    <div class="title"> {{ course.title }} </div>
-                    <div class="price-container">
-                        <!-- 商品单价 -->
-                        <div class="price">￥{{ course.price }}</div>
-                        <!-- 控制数量 -->
-                        <div class="control-cart">
-                            <button class="minus-cart"
-                                @click="controlCart('-', course)"
-                            >-</button>
-                            <input type="text" 
-                                class="cart-num" 
-                                v-model="course.cart"
-                            >
-                            <button class="add-cart"
-                                @click="controlCart('+', course)"
-                            >+</button>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-
-        <!-- 控制：全选+结算 -->
-        <div class="control">
-            <div class="select">
-                <input type="checkbox" 
-                    class="select-all"
-                    v-model="checkedAll"    
-                >
-                <span>全选</span>
-            </div>
-            <div class="price-container">
-                <span>合计:</span>
-                <span class="price">￥{{ selectTotalPrice}}</span>
-                <button class="accounts">结算({{ selectNum }})</button>
-            </div>
-        </div>
+        {{ msg }}
+        <br>
+        {{ obj }}
     </div>
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                courseList: [
-                    {
-                        poster: 'https://img.alicdn.com/bao/uploaded/i1/TB1VtAgdlWD3KVjSZFs3KIqkpXa_040950.jpg_80x80.jpg',
-                        title: '渡一教育 CSS3 深度剖析',
-                        price: 1299,
-                        cart: 1,
-                        id: 0
-                    },
-                    {
-                        poster: 'https://img.alicdn.com/bao/uploaded/i7/TB1_VJecBWD3KVjSZKPagip7FXa_045814.jpg_80x80.jpg',
-                        title: '渡一教育 移动端开发课程',
-                        price: 1148,
-                        cart: 1,
-                        id: 1595402664708
-                    },
-                    {
-                        poster: 'https://img.alicdn.com/bao/uploaded/i2/TB1J.Q4cQxz61VjSZFto7uDSVXa_010347.jpg_80x80.jpg',
-                        title: '渡一教育 2019年 HTMLCSS零基础入学宝典',
-                        price: 1,
-                        cart: 1,
-                        id: 1596305473062
-                    },
-                    {
-                        poster: 'https://img.alicdn.com/bao/uploaded/i2/TB1bHwlaCWD3KVjSZSgVbgCxVXa_032434.jpg_80x80.jpg',
-                        title: '渡一教育 Web前端开发JavaScriptJs课',
-                        price: 1,
-                        cart: 1,
-                        id: 1595413512182
-                    },
-                    {
-                        poster: 'https://img.alicdn.com/bao/uploaded/i2/TB1MJd3g4z1gK0jSZSgnHevwpXa_014447.jpg_80x80.jpg',
-                        title: 'Web前端开发高级工程师全阶班【渡一教育】',
-                        price: 12798,
-                        cart: 1,
-                        id: 1596302161181
-                    },
-                    {
-                        poster: 'https://img.alicdn.com/bao/uploaded/i6/TB1xPeAbwaH3KVjSZFpjaLhKpXa_105848.jpg_80x80.jpg',
-                        title: '渡一教育 Java零基础入门到精通（集合，泛型等）',
-                        price: 1,
-                        cart: 1,
-                        id: 1596300025301,
-                    },
-                ]
+                msg: '123456',
+                obj: {
+                    name: 'wangni',
+                    age: 18,
+                    looks: 'beautiful'
+                }
             },
             methods: {
-                //控制加减按钮("-"/"+", 哪个li上的 )
-                controlCart (type, course) {
-                    let cartNum = course.cart;
-                    if(type === "-") {
-                        if(cartNum == 1) {
-                            alert('宝贝数量不能再少了');
-                        } else{
-                            course.cart--;
-                        }
-                    }else {
-                        course.cart++;
-                    }
+                msgChange () {
+                    console.log('msg的值改变了')
                 }
             },
-            computed: {
-                // 得到一个被选择的列表
-                selectList () {
-                    //filter()符合条件的,组成新数组,不改变原数组
-                    return this.courseList.filter(course => course.checked);
-                },
-                //选择的合计金额
-                selectTotalPrice () {
-                    let price = 0;
-                    this.selectList.forEach(course => {
-                        price += course.price * course.cart;
-                    })
-                    return price;
-                },
-                // 结算数量
-                selectNum () {
-                    return this.selectList.length;
-                },
-                //全选框
-                checkedAll: {
-                    //获取属性
-                    get () {
-                        //every()方法不改变原数组,用于检测数组所有元素是否都符合指定条件,有一个不满足,整个表达式返回false,都满足则返回true
-                        return this.courseList.every(course => course.checked);
-                    },
-                    //点击全选框时(是否勾选)
-                    set (val) {
-                        //遍历li列表,如果勾选,就给每一项都设为勾选,如果不勾选,给每一项都设为不勾选
-                        this.courseList.forEach(course => course.checked = val)
-                    }
-                }
+            //侦听器watch
+            watch: {
+                //要侦听的数据: 函数 / 字符串(某个方法的名字) / 对象(handler回调函数) / 数组
+                // msg: function (newVal, oldVal) {
+                //     console.log(`newVal:${newVal}`);
+                //     console.log(`oldVal:${oldVal}`);
+                // },
+                //字符串(某个方法的名字)
+                // msg: 'msgChanges',
+                // obj: {
+                //     //handler回调函数
+                //     handler: function () {
+                //         console.log('obj的值改变了')
+                //     },
+                //     deep: true
+                // },
+                //监听obj的name属性
+                // 'obj.name' () {
+                //     console.log('obj.name改变了')
+                // }
+
             }
-
         })
+        // 三个参数时:
+        // vm.$watch('msg', function () {
+        //     console.log('msg的值改变了')
+        // }, {
+        //     deep: true,
+        //     immediate: true
+        // })
 
-        //往courseList里的每一项,添加checked: false
-        vm.courseList.forEach(course => vm.$set(course, 'checked', false))
+        //两个参数
+        // vm.$watch('msg', {
+        //     handler() {},
+        //     deep: Boolean,
+        //     immediate: Boolean
+        // })
+
+        //取消监听unwatch()侦听器函数执行后，会返回一个取消侦听函数，用来停止触发回调：
+        const unwatch = vm.$watch('msg', function (newVal) {
+            if(newVal === '0') {
+                unwatch();
+            }
+            console.log('监听msg');
+        })
     </script>
 </body>
 
