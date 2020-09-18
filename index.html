@@ -12,128 +12,19 @@
 <body>
 
     <div id="app">
-        <div class="control">
-            <input type="text" class="search" v-model="filterText">
-            <div>
-                <span class="option" 
-                    :class="{active: optionActive[index]}"
-                    v-for="(option, index) in controlOptions"
-                    @click="filterBySex(index, option)"
-                >
-                    {{ option }}
-                </span>
-            </div>
-        </div>
 
-        <ul>
-            <li class="person" 
-                v-for="person in personList"
-                :key="person.id"
-            >
-                <div class="avatar">
-                    <img :src= "person.src" :alt="person.name">
-                </div>
-                <div class="content">
-                    <span class="name">{{ person.name }}</span>
-                    <span class="des">{{ person.des }}</span>
-                </div>
-            </li>
-        </ul>
     </div>
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                // 按钮的数据
-                controlOptions: ['Male', 'Female', 'All'],
-                //过滤的文字
-                filterText: '',
-                // 是否给option添加active
-                optionActive: [false, false, true],
-                //要显示的性别
-                sex: ['m', 'f'],
-                personArr: [
-                    {
-                        name: '王港',
-                        src: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=4005587090,2408158268&fm=26&gp=0.jpg',
-                        des: '颈椎不好',
-                        sex: 'm',
-                        id: '056482'
-                    },
-                    {
-                        name: '刘莹',
-                        src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1571915784984&di=a0056fd06188e87b922c60878e5ce6e2&imgtype=0&src=http%3A%2F%2Fpic.51yuansu.com%2Fpic3%2Fcover%2F03%2F79%2F64%2F5c05df1faf3b7_610.jpg',
-                        des: '我是谁',
-                        sex: 'f',
-                        id: '157894'
-                    },
-                    {
-                        name: '刘秀莹',
-                        src: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=4005587090,2408158268&fm=26&gp=0.jpg', 
-                        des: '我长得很好看',
-                        sex: 'f',
-                        id: '2849245'
-                    },
-                    {
-                        name: '刘金雷',
-                        src: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=4005587090,2408158268&fm=26&gp=0.jpg',
-                        sex: 'm',
-                        id: '348515'
-                    },
-                    {
-                        name: '刘飞翔',
-                        src: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=4005587090,2408158268&fm=26&gp=0.jpg',
-                        des: '瓜皮刘',
-                        sex: 'm',
-                        id: '478454'
-                    }
-                ]
+
             },
             methods: {
-                //通过性别过滤(索引，'Male/Female/All')
-                filterBySex(index, option) {
-                    //切换class
-                    //判断当前点击的是不是true
-                    if(this.optionActive[index]) {
-                        return;
-                    }
-                    // 把数组里的每一项都设为false
-                    for(let i = 0; i < this.optionActive.length; i++) {
-                        this.optionActive[i] = false;
-                    }
-                    //把点击的那一个设为true
-                    this.optionActive.splice(index, 1, true);
 
-                    //操作显示性别的数组
-                    this.sex.length = 0;//先清空this.sex数组
-                    switch(option) {
-                        case 'Male': 
-                            this.sex.push('m');
-                            break;
-                        case 'Female': 
-                            this.sex.push('f');
-                            break;
-                        case 'All': 
-                            this.sex.push('m', 'f');
-                            break;
-                    }
-                }
             },
-            // 计算属性
-            computed: {
-                // 人物列表
-                personList () {
-                    const {personArr, filterText, sex} = this;
-                    //filter()方法，创建一个新数组，元素是符合条件的所有元素
-                    return personArr.filter(item => {
-                    // includes() 
-                    //item.name里是否包含filterText的内容,包含true
-                    //sex要显示的性别里，是否包含item.sex判断显示男女
-                        return item.name.includes(filterText) && sex.includes(item.sex)
-                    })
-                }
-            }
+            comput
         })
     </script>
 </body>
