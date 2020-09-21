@@ -4,78 +4,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>21.练习_仿百度搜索联想</title>
+    <title>22.vue-resource</title>
     <link rel="stylesheet" href="./index.css">
-    <script src="./jquery.js"></script>
     <script src="./vue.js"></script>
+    <script src="./vue-resource.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <div class="logo">
-            <img src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="百度一下" title="点击一下了解更多">
+        <div class="username">
+            <input type="text" placeholder="用户名" v-model="name">
         </div>
-
-        <!-- 搜索区域 -->
-        <div class="search-box">
-            <span class="search-area">
-                <!-- input设置最多输入100个字节 
-                    @focus聚焦事件,@blur失焦事件
-                -->
-                <input type="text"
-                    maxlength="100"
-                    v-model="inputVal"
-                    @focus="() => this.inputFocus = true"
-                    @blur="() => this.inputFocus = false"
-                >
-                <span class="icon iconfont">&#xe611;</span>
-            </span>
-            <span class="search-btn">百度一下</span>
+        <div class="mail">
+            <input type="text" placeholder="邮箱" v-model="mail">
         </div>
-
-        <!-- 搜索的列表 v-show根据表达式之真假值，切换元素的 display CSS属性-->
-        <!-- 当聚焦时,且输入有值的时候,显示列表 -->
-        <ul class="search-list"
-            v-show="inputFocus && searchResList.length"
-        >
-            <li v-for="res in searchResList"
-                :key="res"
-            >{{ res }}</li>
+        <div class="upload-btn" @click="handleUpload">上传</div>
+        <div class="test-btn" @click="handleTest">测试jsonp</div>
+        <div class="show-btn" @click="handleShow">显示人物信息</div>
+        <ul class="person-list" v-if="personList.length">
+            <li class="person" 
+                v-for="person in personList"
+            >
+                <span>{{ person.name }}</span>
+                <span>{{ person.mail }}</span>
+            </li>
         </ul>
     </div>
+
 
     <script>
         const vm = new Vue({
             el: '#app',
             data: {
-                // input输入的内容
-                inputVal: '',
-                //控制列表的显示和隐藏,初始时隐藏
-                inputFocus: false,
-                //搜索结果的列表
-                searchResList: []
+                name: '',
+                mail: '',
+                msg: '',
+                personList: []
             },
             methods: {
-                //搜索的结果
-                searchRes (res) {
-                    console.log(res);
-                    this.searchResList = res.s;
-                }
-            },
-            //侦听器
-            watch: {
-                // 侦听inputVal的值的变化
-                inputVal () {
-                    // console.log(this.inputVal)
-                    $.ajax({
-                        dataType: 'jsonp',
-                        url: 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',
-                        data: {
-                            wd: this.inputVal, //字符串,搜索的文字
-                            cb: 'vm.searchRes' //字符串,callback函数的名字
+                handleUpload () {
+                    // console.log(this.name, this.mail);
+                    //请求数据
+                    // this.$http.post(url请求地址, {要去发送的数据})
+                    this.$http.post('https://developer.duyiedu.com/vue/setUserInfo', {
+                        name: this.name,
+                        mail: this.mail
+                    }).then(res => { //上传成功
+                        // console.log(res);
+                        this.msg = res.body.msg;//后台返回的数据
+                    }).catch(error => { //上传失败
+                        // console.log(error);
+                        this.msg = error.body.msg;
+                    })
+                },
+                handleShow () {
+                    this.$http.get('https://developer.duyiedu.com/vue/getUserInfo').then(res => {
+                        // console.log(res.body.data);
+                        // res.body.data.forEach(res => {
+                        //     console.log(res);
+                        //     // this.res = res;
+                        // })
+                        for(let i = 0; i < 50; i++) {
+                            // console.log(res.body.data[i])
+                            this.personList = res.body.data;
                         }
                     })
+                },
+                handleTest () {
+                    this.$http.jsonp('https://developer.duyiedu.com/vue/jsonp').then(res => {
+                        console.log(res.body);
+                    })
 
+                    // 仿百度搜索联想，获取方式
+                    // this.$http.jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su', {
+                    //     params: {
+                    //         wd: '百度'
+                    //     },
+                    //     jsonp: 'cb'
+                    // }).then(res => {
+                    //     console.log(res);
+                    // })
+                }
+            },
+            watch: {
+                //监听msg
+                msg () {
+                    if(this.msg === '') {
+                        return ;
+                    }
+                    alert(this.msg);
+                    this.msg = '';
                 }
             }
         })
