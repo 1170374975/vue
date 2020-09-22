@@ -1,12 +1,12 @@
 *{
-    margin: 0;
     padding: 0;
+    margin: 0;
 }
 li{
     list-style: none;
 }
 #app{
-    position: relative;
+    
     width: 284px;
     margin: 50px auto;
 }
@@ -17,6 +17,7 @@ li{
     border: 1px solid #ddd;
     font-size: 14px;
     color: #666;
+
 }
 .username input,
 .mail input{
@@ -28,8 +29,7 @@ li{
     outline: none;
 }
 .upload-btn,
-.show-btn,
-.test-btn{
+.show-btn{
     width: 284px;
     height: 40px;
     margin-bottom: 10px;
@@ -37,6 +37,7 @@ li{
     color: #fff;
     background-color: #3f89ec;
     border-radius: 3px;
+    border: none;
     text-align: center;
     cursor: pointer;
 }
