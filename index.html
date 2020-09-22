@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>23.axios-1</title>
+    <title>24.axios-2</title>
     <link rel="stylesheet" href="./index.css">
     <script src="./vue.js"></script>
     <script src="./axios.js"></script>
@@ -21,6 +21,7 @@
         </div>
         <button class="upload-btn" @click="handleUpload">上传</button>
         <button class="show-btn" @click="handleShow">显示人物信息</button>
+        <button @click="handleCancelGet">取消http请求</button>
         <ul class="person-list" v-if="personList.length">
             <li class="person"
                 v-for="person in personList"
@@ -32,10 +33,36 @@
     </div>
 
     <script>
-        //axios的配置默认值（全局的）
+        //全局配置
         axios.defaults.baseURL = 'https://developer.duyiedu.com/vue';
 
-        
+        //请求拦截器,修改配置，return出去
+        axios.interceptors.request.use(config => {
+            // console.log(config); //配置
+            if(config.method === 'get') {
+                //....
+            } else if (config.method === 'post') {
+                //....
+            }
+            return config;
+        })
+
+
+        //响应拦截器
+        const interceptor = axios.interceptors.response.use(response => {
+            console.log(response);
+            if(response.status === 200) {
+                return response.data;
+            } else {
+                //....
+            }
+        })
+        //移除响应拦截器
+        axios.interceptors.response.eject(interceptor);
+
+        //取消http请求
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
 
         const vm = new Vue({
             el: '#app',
@@ -47,25 +74,19 @@
             },
             methods: {
                 handleUpload () {
-                    const {name, mail} = this;
-                    //方法别名
-                    axios.post('/setUserInfo', {name, mail}, {
-                        // baseURL: 'https://developer.duyiedu.com/vue'
-                    }).then(res => {
-                        // console.log(res);
-                        this.msg = res.data.msg;
-                    })
+                    
                 },
                 handleShow () {
-                    axios({
-                        method: 'get',
-                        // baseURL: 'https://developer.duyiedu.com/vue',
-                        url: '/getUserInfo',
+                    axios('/getUserInfo', {
+                        cancelToken: source.token
                     }).then(res => {
-                        // console.log(res);
-                        this.msg = res.data.msg;
-                        this.personList = res.data.data;
+                        console.log(res);
+                    }).catch(error => {
+                        console.log(error);
                     })
+                },
+                handleCancelGet () {
+                    source.cancel('取消请求了')
                 }
             },
             watch: {
