@@ -4,16 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>23.axios-1</title>
+    <title>哔哩哔哩移动版</title>
     <link rel="stylesheet" href="./assets/reset.css">
     <link rel="stylesheet" href="./assets/index.css">
-    <script src="./vue.js"></script>
     <script src="./axios.js"></script>
+    <script src="./request.js"></script>
+    <script src="./vue.js"></script>
+
 
 </head>
 
 <body>
-    <div id="app">
+    <!-- 监听滚动事件 -->
+    <div id="app" 
+        @scroll="handleScroll"
+    >
         <!-- header区域  -->
         <div class="header">
             <div class="logo">
@@ -29,53 +34,107 @@
             <div class="download-app">下载App</div>
         </div>
 
-        <!-- nav导航区域 -->
-        <div 
-            :class="{
-                'nav-box': navIndex === 1,
-                'hide-nav-box': navIndex === 2,
-                hide: navIndex === 2 && navHide
-            }"
-            v-for="navIndex in 2"
+        <!-- nav导航区域 当navList为空数组时，不渲染-->
+        <template v-if="navList.length">
+            <div v-for="navIndex in 2"
+                :key="navIndex"
+                :class="{
+                    'nav-box': navIndex === 1,
+                    'hide-nav-box': navIndex === 2,
+                    hide: navIndex === 2 && navHide
+                }"   
+            >
+                <!-- {{ navList }} -->
+                <ul class="nav-list">
+                    <li v-for="(nav, index) in navList"
+                        :key="nav.id"
+                        class="nav"
+                        :class="{
+                            big: nav.title.length === 3 && navIndex === 2,
+                            active: index === navActiveIndex
+                        }"
+                        @click="handleNavClick(index)" 
+                    >{{ nav.title }}</li>
+                </ul>
+                <div class="down" 
+                    v-if="navIndex === 1"
+                    @click="handleClick"    
+                >
+                    <svg width="16" height="32" viewBox="0 0 1024 1024"><path d="M515.2 649.6L169.6 304c-12.8-12.8-32-12.8-44.8 0s-12.8 35.2 0 48l368 364.8c12.8 12.8 32 12.8 44.8 0l361.6-361.6c12.8-12.8 12.8-35.2 0-48s-32-12.8-44.8 0L515.2 649.6z" fill="#ccc"></path></svg>
+                </div>
+                <div class="up" v-else
+                    @click="handleClick"
+                >
+                    <svg width="16" height="32" viewBox="0 0 1024 1024"><path d="M854.4 713.6c12.8 12.8 32 12.8 44.8 0s12.8-35.2 0-48L537.6 304c-12.8-12.8-32-12.8-44.8 0L124.8 672c-12.8 12.8-12.8 35.2 0 48s32 12.8 44.8 0l345.6-342.4 339.2 336z" fill="#ccc"></path></svg>
+                </div>
+            </div>
+        </template>
+        
+
+        <!-- banner轮播图区域 
+        transitionend 事件在 CSS 完成过渡后触发
+        -->
+        <div  v-if="bannerList.length"
+            class="banner-box"
         >
-            <!-- {{ navList }} -->
-            <ul class="nav-list">
-                <li class="nav"
-                    :class="{
-                        big: nav.title.length === 3 && navIndex === 2,
-                        active: index === navActiveIndex
-                    }"
-                    @click="handleNavClick(index)"
-                    v-for="(nav, index) in navList"
-                    :key="nav.id"
-                >{{ nav.title }}</li>
+            <ul class="banner-list"
+                :style="bannerStyle"
+                @transitionend="handleTransitionEnd"
+            >
+                <li class="banner"
+                    v-for="banner in bannerList"
+                    :key="banner.id"
+                >
+                    <img class="poster" :src="banner.poster" :alt="banner.title">
+                    <span></span>
+                </li>
             </ul>
-            <div class="down" 
-                v-if="navIndex === 1"
-                @click="handleClick"    
-            >
-                <svg width="16" height="32" viewBox="0 0 1024 1024"><path d="M515.2 649.6L169.6 304c-12.8-12.8-32-12.8-44.8 0s-12.8 35.2 0 48l368 364.8c12.8 12.8 32 12.8 44.8 0l361.6-361.6c12.8-12.8 12.8-35.2 0-48s-32-12.8-44.8 0L515.2 649.6z" fill="#ccc"></path></svg>
-            </div>
-            <div class="up" v-else
-                @click="handleClick"
-            >
-                <svg width="16" height="32" viewBox="0 0 1024 1024"><path d="M854.4 713.6c12.8 12.8 32 12.8 44.8 0s12.8-35.2 0-48L537.6 304c-12.8-12.8-32-12.8-44.8 0L124.8 672c-12.8 12.8-12.8 35.2 0 48s32 12.8 44.8 0l345.6-342.4 339.2 336z" fill="#ccc"></path></svg>
-            </div>
+            <ul class="index-list">
+                <li v-for="index in bannerList.length - 1"
+                    :key="index"
+                    class="index"
+                    :class="{active : bannerActiveIndex % 3 === index - 1}"
+                        
+                ></li>
+            </ul>
         </div>
 
-        <!-- banner轮播图区域 -->
-        <div class="banner">
-            
-        </div>
-
-        <!-- video区域 -->
-        <div class="video">
-
+        <!-- video视频列表区域 -->
+        <div class="video-box"
+            v-if="videoList.length"
+        >
+            <ul class="video-list">
+                <li 
+                    v-for="video in videoList"
+                    :key="video.id"
+                    class="video"
+                >
+                    <div class="poster">
+                        <img :src="video.poster" alt="video.title">
+                        <div class="info">
+                            <div class="play">
+                                <svg id="icon-bofangshu" viewBox="0 0 1024 1024"><path d="M800 128H224C134.4 128 64 198.4 64 288v448c0 89.6 70.4 160 160 160h576c89.6 0 160-70.4 160-160V288c0-89.6-70.4-160-160-160z m96 608c0 54.4-41.6 96-96 96H224c-54.4 0-96-41.6-96-96V288c0-54.4 41.6-96 96-96h576c54.4 0 96 41.6 96 96v448z"></path><path d="M684.8 483.2l-256-112c-22.4-9.6-44.8 6.4-44.8 28.8v224c0 22.4 22.4 38.4 44.8 28.8l256-112c25.6-9.6 25.6-48 0-57.6z"></path></svg>
+                                {{ video.play }}
+                            </div>
+                            <div class="rank"
+                                v-if="video.rank"
+                            >
+                                <svg viewBox="0 0 1024 1024"><path d="M800 128H224C134.4 128 64 198.4 64 288v448c0 89.6 70.4 160 160 160h576c89.6 0 160-70.4 160-160V288c0-89.6-70.4-160-160-160z m96 608c0 54.4-41.6 96-96 96H224c-54.4 0-96-41.6-96-96V288c0-54.4 41.6-96 96-96h576c54.4 0 96 41.6 96 96v448z"></path><path d="M240 384h64v64h-64zM368 384h384v64h-384zM432 576h352v64h-352zM304 576h64v64h-64z"></path></svg>
+                                {{ video.rank }}   
+                            </div>
+                        </div>
+                        
+                    </div>
+  
+                    <div class="title">{{ video.title }}</div>
+                </li>
+            </ul>
         </div>
 
         <!-- footer区域 -->
         <div class="footer">
-
+            <p>哔哩哔哩 沪ICP备13002172号-3</p>
+            <p>信息网络传播视听节目许可证：0910417</p>
         </div>
     </div>
     <script>
@@ -88,6 +147,33 @@
                 navHide: true,
                 // 点击了哪个导航，加上active
                 navActiveIndex: 0,
+                //轮播图列表
+                bannerList: [],
+                //轮播图每次移动的宽度
+                bannerWidth: 350,
+                //轮播图当前索引
+                bannerActiveIndex: 0,
+                //轮播图style
+                bannerStyle: {
+                    left: 0,
+                    transition: 'left .3s'
+                },
+                videoOldList: [],
+                // 再次请求视频列表数据时，加个锁
+                videoGettingData: false,
+                // 视频的总条数
+                videoCount: 0,
+            },
+            computed: {
+                //计算属性，播放量 万
+                videoList () {
+                    // 遍历获取的视频列表
+                    return this.videoOldList.map(video => {
+                        video.play = video.play > 10000 ? video.play / 10000 + '万' : video.play;
+                        video.rank = video.rank > 10000 ? video.rank / 10000 + '万' : video.rank;
+                        return video;
+                    })
+                }
             },
             methods: {
                 handleClick () {
@@ -95,16 +181,128 @@
                 },
                 handleNavClick (index) {
                     this.navActiveIndex = index
+                },
+                //轮播图自动滚动
+                autoMove () {
+                    setTimeout (() => {
+                        if(this.bannerActiveIndex === 0) {
+                            this.bannerStyle.transition = 'left .3s';
+                        }
+                        this.bannerActiveIndex ++;
+                        this.bannerStyle.left = -this.bannerActiveIndex * this.bannerWidth + 'px';
+                    }, 1500);
+                },
+                //transitionend 事件在 CSS 完成过渡后触发
+                handleTransitionEnd () {
+                    if(this.bannerActiveIndex === 3) {
+                        this.bannerActiveIndex = 0;
+                        this.bannerStyle.left = 0;
+                    
+                        this.bannerStyle.transition = 'none';
+                    }
+                    this.autoMove();
+                },
+                // 滚动事件
+                handleScroll (e) {
+                    // console.log(e.target);
+                    // const dom = e.target;
+                    // console.log(dom, '整个滚动区域的高度:' + dom.scrollHeight, '整个屏幕的高度:' + dom.offsetHeight, '滚动条距离顶部的高度:' + dom.scrollTop);
+
+                    const {scrollHeight, offsetHeight, scrollTop} = e.target;
+                    //滚动条距离底部的高度
+                    const toBottomHeight = scrollHeight - offsetHeight - scrollTop;
+                    const videoLength = this.videoList.length;
+                    //如果获取到的视频长度=总的视频条数，就不再发送请求
+                    if (videoLength === this.videoCount) {
+                        return;
+                    }
+                    // console.log(toBottomHeight);
+                    //当距离底部还有200且没有再获取视频数据时，再请求视频列表，更新一下
+                    if(toBottomHeight < 200 && !this.videoGettingData) {
+                        this.videoGettingData = true;
+                        axios.get('video', {
+                            params: {
+                                start: this.videoList.length,
+                                offset: 12
+                            }
+                        }).then(res => {
+                            // if(res.status === 200) {
+                            //     // console.log(res.data.data);
+                            //     this.videoOldList.push(...res.data.data);
+                            //     this.videoGettingData = false;
+                            // }
+                            this.videoOldList.push(...res.data);
+                            this.videoGettingData = false;
+                        })
+                    }
+
                 }
             },
             //会在实例创建之后执行，ajax
             created () {
-                axios.get('https://developer.duyiedu.com/vue/bz/nav').then(res => {
+                // 并发，同时进行多个请求，并统一处理返回值
+                // axios.all([
+                //     axios.get('nav'),
+                //     axios.get('banner'),
+                //     axios.get('video', {
+                //         params: {
+                //             start: 0,
+                //             offset: 12
+                //         }
+                //     })
+                //     //回调函数(nav的返回值，banner的返回值，video的返回值)
+                // ]).then(axios.spread((navRes, bannerRes, videoRes) => {
+                //     this.navList = res.data;
+                // }))
+
+
+                //请求导航信息
+                axios.get('nav').then(res => {
                     // console.log(res);
-                    if(res.status === 200) {
-                        this.navList = res.data.data;
-                    }
+
+                    // 在request.js里设置了响应拦截器,此时的res就是res.data.data
+                    // if(res.status === 200) {
+                    //     this.navList = res.data.data;
+                    // }
+                    this.navList = res.data;
                 })
+                //请求轮播图信息
+                axios.get('banner').then(res => {
+                    // console.log(res);
+                    // if(res.status === 200) {
+                    //     const lastEle = {...res.data.data[0]};
+                    //     lastEle.id = Math.floor(Math.random() * 10000000);
+                    //     this.bannerList = [...res.data.data, lastEle];
+                    // }
+                    // console.log(this.bannerList);
+
+                    const lastEle = {...res.data[0]};
+                    lastEle.id = Math.floor(Math.random() * 10000000);
+                    this.bannerList = [...res.data, lastEle];
+                })
+// map
+                // 视频列表信息
+                axios.get('video', {
+                    params: {
+                        start: 0,
+                        offset: 12
+                    }
+                }).then(res => {
+                    // console.log(res);
+                    // if(res.status === 200) {
+                    //     //视频总条数
+                    //     this.videoCount = res.data.count;
+                    //     this.videoOldList = res.data.data;
+                    // }
+
+                    this.videoCount = res.count;
+                    this.videoOldList = res.data;
+
+                })
+            },
+            mounted () {
+                //el替换完毕之后，执行autoMove函数
+                this.autoMove();
             }
         })
     </script>

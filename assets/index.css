@@ -1,4 +1,8 @@
 
+#app{
+    height: 100vh;
+    overflow-y: scroll;
+}
 /* header区域 */
 .header{
     position: fixed;
@@ -59,7 +63,7 @@
     left: 0;
     right: 0;
     z-index: 1;
-    /* background-color: yellowgreen; */
+    background-color: #fff;
 }
 .nav-box .nav-list{
     width: 85%;
@@ -131,9 +135,128 @@
 }
 
 /* banner轮播图区域 */
+.banner-box{
+    position: relative;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 350px;
+    height: 110px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.banner-box .banner-list{
+    position: absolute;
+    left: 0;
+    width: calc(350px * 4);
+    transition: left .3s;
+}
+.banner-box .banner-list::after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.banner-box .banner{
+    float: left;
+    width: 350px;
+    height: 110px;
+}
+.banner-box .poster{
+    width: 100%;
+    height: 100%;
+}
+.banner-box .index-list{
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    /* width: 40px; */
+    height: 10px;
+    padding: 0 3px;
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 5px;
+}
+.banner-box .index{
+    width: 5px;
+    height: 5px;
+    background-color:#fff;
+    margin: 0 3px;
+    border-radius: 50%;
+}
+.banner-box .index.active{
+    background-color: #fb7299;
+}
 
+/* video视频列表区域 */
+.video-box {
+    padding: 100px 6px 0px 6px;
+}
+.video-box .video-list::after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.video-box .video{
+    float: left;
+    width: 50%;
+}
+.video-box .poster{
+    position: relative;
+    height: 106px;
+    margin: 0 6px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.video-box .poster img{
+    width: 100%;
+    height: 100%;
+}
+.video-box .poster .info{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    padding: 7px 0 3px 10px;
+    color: #fff;
+    font-size: 12px;
+    background-image: linear-gradient(rgba(33, 33, 33, 0), rgba(33, 33, 33, .5));
+}
+.video-box .poster .info div{
+    display: inline-flex;
+    align-items: center;
+}
+.video-box .poster .info svg{
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    fill: #fff;
+}
+.video-box .title{
+    margin: 6px 6px 10px 6px;
+    height: 38px;
+    line-height: 20px;
+    font-size: 13px;
 
+    /* 设置多行文本溢出打点： */
+    overflow: hidden;
+    /* 设置盒子为伸缩盒 */
+    display: -webkit-box;
+    /* 设置伸缩盒内子元素的排列方式为vertical */
+    -webkit-box-orient: vertical;
+     /* 限制一个块元素内显示的文本行数，这个属性不是css的规范属性，需要组合上面两个属性，表示显示的行数。 */
+    -webkit-line-clamp: 2;
+}
 
-
-
-
+/* footer底部区域 */
+.footer{
+    margin-top: 40px;
+}
+.footer p{
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #999;
+}
