@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>32.组件基础</title>
+    <link rel="stylesheet" href="./index.css">
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,57 +14,67 @@
 
 <body>
     <div id="app">
-        <!-- 全局组件 -->
-        <my-component></my-component>
-
-        <button-counter></button-counter>
-        <button-counter></button-counter>
-        <button-counter></button-counter>
-        <button-counter></button-counter>
-
-        <!-- 局部组件 -->
-        <shanshan-cmp></shanshan-cmp>
+        <!-- 当 传递的prop为 短横线分隔命名时，组件内 的props 应为 驼峰命名 -->
+        <video-list :video-list="videoList"></video-list>
+        <!-- <video-item
+            v-for="video in videoList"
+            :key="video.id"
+            :poster="video.poster"
+            :play="video.play"
+            :rank="video.rank"
+            :title="video.title"
+        ></video-item> -->
     </div>
+
     <script>
-        // 全局组件
-        Vue.component('my-component', {
-            template: '<div>我是全局组件my-component</div>'
+        // 全局组件(只使用一次的组件可以在组件内请求数据，使用多次的组件，不可以)
+        Vue.component('video-list', {
+            props: ['videoList'],
+            // 如果你想要将一个对象的所有属性都作为 prop 传入，你可以使用不带参数的 v-bind
+            template: `
+                <div class="video-list">
+                    <video-item
+                        v-for="video in videoList"
+                        v-bind="video"
+                    ></video-item>
+                </div>
+            `
         })
 
-        Vue.component('button-counter', {
-            data () {
-                return {
-                    count: 0
-                }
-            },
-            template:  `<button @click="count++">点击{{ count }}次</button>`
+
+
+        Vue.component('video-item', {
+            props: ['poster', 'play', 'rank', 'title'],
+            template: `
+                <div class="video-item">
+                    <div class="poster">
+                        <img :src="poster" alt="">
+                        <div class="info">
+                            <div class="play">{{ play }}</div>
+                            <div class="rank">{{ rank }}</div>
+                        </div>
+                    </div>
+                    <div class="title">{{ title }}</div>
+                </div>
+            `
         })
 
         const vm = new Vue({
             el: '#app',
-            components: {
-                'shanshan-cmp': {
-                    template: `
-                        <div>我是局部组件shanshan-cmp</div>
-                    `
-                }
+            data: {
+                videoList: [],
             },
-            template: `
-                <div id="app">
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                    <shanshan-cmp/>
-                </div>
-            `
+            created () {
+                axios.get('https://developer.duyiedu.com/vue/bz/video', {
+                    params: {
+                        start: 0,
+                        offset: 12
+                    }
+                }).then(res => {
+                    console.log(res);
+                    this.videoList = res.data.data;
+                })
+            }
         })
     </script>
 </body>
