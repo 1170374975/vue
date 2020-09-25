@@ -235,70 +235,91 @@
                             this.videoGettingData = false;
                         })
                     }
-
-                }
+                },
+                //请求数据的函数
+                getData () {
+                    // 并发，同时进行多个请求，并统一处理返回值
+                    axios.all([
+                        axios.get('nav'),
+                        axios.get('banner'),
+                        axios.get('video', {
+                            params: {
+                                start: 0,
+                                offset: 12
+                            }
+                        })
+                        //回调函数(nav的返回值，banner的返回值，video的返回值)
+                    ]).then(axios.spread((navRes, bannerRes, videoRes) => {
+                        //请求导航
+                        this.initNavList(navRes);
+                        //请求轮播图
+                        this.initBannerList(bannerRes);
+                        //请求视频列表
+                        this.initVideo(videoRes);
+                    }))
+                },
+                //初始化navList、轮播图bannerList、视频列表video
+                initNavList (navRes) {
+                    this.navList = navRes.data;
+                },
+                initBannerList (bannerRes) {
+                    const bannerLastEle = {...bannerRes.data[0]};
+                    bannerLastEle.id = Math.floor(Math.random() * 10000000);
+                    this.bannerList = [...bannerRes.data, bannerLastEle];
+                },
+                initVideo (videoRes) {
+                    this.videoCount = videoRes.count;
+                    this.videoOldList = videoRes.data;
+                },
             },
             //会在实例创建之后执行，ajax
             created () {
-                // 并发，同时进行多个请求，并统一处理返回值
-                // axios.all([
-                //     axios.get('nav'),
-                //     axios.get('banner'),
-                //     axios.get('video', {
-                //         params: {
-                //             start: 0,
-                //             offset: 12
-                //         }
-                //     })
-                //     //回调函数(nav的返回值，banner的返回值，video的返回值)
-                // ]).then(axios.spread((navRes, bannerRes, videoRes) => {
-                //     this.navList = res.data;
-                // }))
+                this.getData(); //请求data数据
 
 
                 //请求导航信息
-                axios.get('nav').then(res => {
-                    // console.log(res);
+                // axios.get('nav').then(res => {
+                //     // console.log(res);
 
-                    // 在request.js里设置了响应拦截器,此时的res就是res.data.data
-                    // if(res.status === 200) {
-                    //     this.navList = res.data.data;
-                    // }
-                    this.navList = res.data;
-                })
+                //     // 在request.js里设置了响应拦截器,此时的res就是res.data.data
+                //     // if(res.status === 200) {
+                //     //     this.navList = res.data.data;
+                //     // }
+                //     this.navList = res.data;
+                // })
                 //请求轮播图信息
-                axios.get('banner').then(res => {
-                    // console.log(res);
-                    // if(res.status === 200) {
-                    //     const lastEle = {...res.data.data[0]};
-                    //     lastEle.id = Math.floor(Math.random() * 10000000);
-                    //     this.bannerList = [...res.data.data, lastEle];
-                    // }
-                    // console.log(this.bannerList);
+                // axios.get('banner').then(res => {
+                //     // console.log(res);
+                //     // if(res.status === 200) {
+                //     //     const lastEle = {...res.data.data[0]};
+                //     //     lastEle.id = Math.floor(Math.random() * 10000000);
+                //     //     this.bannerList = [...res.data.data, lastEle];
+                //     // }
+                //     // console.log(this.bannerList);
 
-                    const lastEle = {...res.data[0]};
-                    lastEle.id = Math.floor(Math.random() * 10000000);
-                    this.bannerList = [...res.data, lastEle];
-                })
-// map
+                //     const lastEle = {...res.data[0]};
+                //     lastEle.id = Math.floor(Math.random() * 10000000);
+                //     this.bannerList = [...res.data, lastEle];
+                // })
+
                 // 视频列表信息
-                axios.get('video', {
-                    params: {
-                        start: 0,
-                        offset: 12
-                    }
-                }).then(res => {
-                    // console.log(res);
-                    // if(res.status === 200) {
-                    //     //视频总条数
-                    //     this.videoCount = res.data.count;
-                    //     this.videoOldList = res.data.data;
-                    // }
+                // axios.get('video', {
+                //     params: {
+                //         start: 0,
+                //         offset: 12
+                //     }
+                // }).then(res => {
+                //     // console.log(res);
+                //     // if(res.status === 200) {
+                //     //     //视频总条数
+                //     //     this.videoCount = res.data.count;
+                //     //     this.videoOldList = res.data.data;
+                //     // }
 
-                    this.videoCount = res.count;
-                    this.videoOldList = res.data;
+                //     this.videoCount = res.count;
+                //     this.videoOldList = res.data;
 
-                })
+                // })
             },
             mounted () {
                 //el替换完毕之后，执行autoMove函数
