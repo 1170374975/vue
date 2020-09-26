@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>35.组件_单向数据流</title>
+    <title>36.组件_非Prop特性</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,56 +13,40 @@
 
 <body>
     <div id="app">
-        father: {{ count }}
-        <button @click="count++">father点击+1</button>
-        <my-count :count="count"></my-count>
+        <!-- 在组件当中，a特性为prop特性，b特性为非prop特性，非prop特性会替换/合并(class、style),已有的特性 -->
+       <my-cmp a="1" b="10" class="haha"></my-cmp>
 
-        father: {{ array }}
-        <button @click="array.push(4)">father点击数组改变</button>
-        <my-array :array="array"></my-array>
+       <my-cmp1 type="radio"></my-cmp1>
     </div>
 
     <script>
-        //数组组件，改变prop需要深度克隆
-        Vue.component('my-array', {
-            props: {
-                array: Array
-            },
-            data() {
-                return {
-                    myArray: [...this.array]
-                }
-            },
+        //非Prop特性
+        Vue.component('my-cmp', {
+            props: ['a'],
             template: `
-                <div>son: {{ myArray }}
-                    <button @click="myArray.push(4)">son点击+1</button>    
-                </div>
+                <div b="2" class="my-cmp">haha</div> 
             `
         })
 
-
-        Vue.component('my-count', {
-            props: {
-                count: Number
+        Vue.component('my-cmp1', {
+            //禁用特性继承
+            inheritAttrs: false,
+            mounted () {
+                console.log(this.$attrs)
             },
-            //如果要改变prop的值，就定义一个本地data
-            data() { 
-                return {
-                    myCount: this.count
-                }
-            },
-            template:  `
-                <div>son: {{ myCount }}
-                    <button @click="myCount++">son点击+1</button>    
-                </div> 
-            ` 
+            //v-bind="$attrs"是把type="radio"特性继承给input
+            template: `
+                <label>
+                    选择：
+                    <input v-bind="$attrs"/>    
+                </label>
+            `
         })
-        
+
         const vm = new Vue({
             el: '#app',
             data: {
-                count: 123,
-                array: [1, 2, 3]
+
             }
         })
     </script>
