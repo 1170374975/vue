@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>32.组件基础</title>
-    <link rel="stylesheet" href="./index.css">
+    <title>34.组件_Prop验证</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -14,66 +13,50 @@
 
 <body>
     <div id="app">
-        <!-- 当 传递的prop为 短横线分隔命名时，组件内 的props 应为 驼峰命名 -->
-        <video-list :video-list="videoList"></video-list>
-        <!-- <video-item
-            v-for="video in videoList"
-            :key="video.id"
-            :poster="video.poster"
-            :play="video.play"
-            :rank="video.rank"
-            :title="video.title"
-        ></video-item> -->
+        <my-cmp ></my-cmp>
     </div>
 
     <script>
-        // 全局组件(只使用一次的组件可以在组件内请求数据，使用多次的组件，不可以)
-        Vue.component('video-list', {
-            props: ['videoList'],
-            // 如果你想要将一个对象的所有属性都作为 prop 传入，你可以使用不带参数的 v-bind
+        Vue.component('my-cmp', {
+            // prop验证
+            props: {
+                //prop基础验证
+                //list: Array, //list传入需要是数组，不是数组就报错
+                //list: [Array,String], //list传入需要是数组或String，不是就报错
+
+                //prop高级验证
+                list: {
+                    type: Array, //检查是否为给定的类型
+                    default() {//为该prop指定的一个默认值，对象或数组的默认值必须从一个工厂函数返回，如default(){return {a:1, b:10}}
+                        return [
+                            {name: 'haha'},
+                            {name: 'heihei'}
+                        ]
+                    }, 
+                 //   required: true, //定义该prop是否是必填项
+                  //  validator(prop){//自定义验证函数，该prop的值会作为唯一的参数代入，若函数返回一个falsy假的值(0/undefined/null/false)，就代表验证失败
+                    //     return prop.length < 140;
+                    // }
+                }
+            },
             template: `
-                <div class="video-list">
-                    <video-item
-                        v-for="video in videoList"
-                        v-bind="video"
-                    ></video-item>
-                </div>
+                <ul>
+                    <li
+                        v-for="person in list"
+                        :key="person.name "
+                    >{{ person.name }}</li>
+                </ul>
             `
         })
 
-
-
-        Vue.component('video-item', {
-            props: ['poster', 'play', 'rank', 'title'],
-            template: `
-                <div class="video-item">
-                    <div class="poster">
-                        <img :src="poster" alt="">
-                        <div class="info">
-                            <div class="play">{{ play }}</div>
-                            <div class="rank">{{ rank }}</div>
-                        </div>
-                    </div>
-                    <div class="title">{{ title }}</div>
-                </div>
-            `
-        })
 
         const vm = new Vue({
             el: '#app',
             data: {
-                videoList: [],
-            },
-            created () {
-                axios.get('https://developer.duyiedu.com/vue/bz/video', {
-                    params: {
-                        start: 0,
-                        offset: 12
-                    }
-                }).then(res => {
-                    console.log(res);
-                    this.videoList = res.data.data;
-                })
+                list: [
+                    {name: '杉杉'},
+                    {name: 'duyi'}
+                ]
             }
         })
     </script>
