@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>34.组件_Prop验证</title>
+    <title>35.组件_单向数据流</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,50 +13,56 @@
 
 <body>
     <div id="app">
-        <my-cmp ></my-cmp>
+        father: {{ count }}
+        <button @click="count++">father点击+1</button>
+        <my-count :count="count"></my-count>
+
+        father: {{ array }}
+        <button @click="array.push(4)">father点击数组改变</button>
+        <my-array :array="array"></my-array>
     </div>
 
     <script>
-        Vue.component('my-cmp', {
-            // prop验证
+        //数组组件，改变prop需要深度克隆
+        Vue.component('my-array', {
             props: {
-                //prop基础验证
-                //list: Array, //list传入需要是数组，不是数组就报错
-                //list: [Array,String], //list传入需要是数组或String，不是就报错
-
-                //prop高级验证
-                list: {
-                    type: Array, //检查是否为给定的类型
-                    default() {//为该prop指定的一个默认值，对象或数组的默认值必须从一个工厂函数返回，如default(){return {a:1, b:10}}
-                        return [
-                            {name: 'haha'},
-                            {name: 'heihei'}
-                        ]
-                    }, 
-                 //   required: true, //定义该prop是否是必填项
-                  //  validator(prop){//自定义验证函数，该prop的值会作为唯一的参数代入，若函数返回一个falsy假的值(0/undefined/null/false)，就代表验证失败
-                    //     return prop.length < 140;
-                    // }
+                array: Array
+            },
+            data() {
+                return {
+                    myArray: [...this.array]
                 }
             },
             template: `
-                <ul>
-                    <li
-                        v-for="person in list"
-                        :key="person.name "
-                    >{{ person.name }}</li>
-                </ul>
+                <div>son: {{ myArray }}
+                    <button @click="myArray.push(4)">son点击+1</button>    
+                </div>
             `
         })
 
 
+        Vue.component('my-count', {
+            props: {
+                count: Number
+            },
+            //如果要改变prop的值，就定义一个本地data
+            data() { 
+                return {
+                    myCount: this.count
+                }
+            },
+            template:  `
+                <div>son: {{ myCount }}
+                    <button @click="myCount++">son点击+1</button>    
+                </div> 
+            ` 
+        })
+        
         const vm = new Vue({
             el: '#app',
             data: {
-                list: [
-                    {name: '杉杉'},
-                    {name: 'duyi'}
-                ]
+                count: 123,
+                array: [1, 2, 3]
             }
         })
     </script>
