@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>40.组件_处理边界情况</title>
+    <title>41.组件_通信</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,13 +13,7 @@
 
 <body>
     <div id="app">
-        <my-cmp>
-            <cmp-a>
-                <cmp-b>
-                    <cmp-c></cmp-c>
-                </cmp-b>
-            </cmp-a>
-        </my-cmp>
+        <my-cmp @click="fn"></my-cmp>
         
     </div>
     
@@ -27,53 +21,48 @@
 
     <script>
 
-        // 处理边界情况
+        // 通信,点击my-cmp给my-cmp1传递数据，兄弟组件的关系
+
+        //在Vue的原型链上添加$bus为一个新的实例
+        Vue.prototype.$bus = new Vue();
+
         Vue.component('my-cmp', {
-            provide () {
-                return {
-                    share: this.share
-                }
-            },
             data () {
                 return {
-                    share: 'share'
+                    name: 'my-cmp',
                 }
             },
-            template: `<div><slot></slot></div>`
-        })
-        Vue.component('cmp-a', {
-            inject: ['share'],
-            mounted () {
-                //获取父级实例的share
-                // console.log(this.$parent.share);//share
-
-                console.log(this.share)
+            methods: {
+                onClick () {
+                    // this.$listeners.click(this.name);
+                    // console.log(this.$listeners)
+                    this.$bus.$emit('bus', this.name);
+                }
             },
-            template: `<div><slot></slot></div>`
+            template: `
+                <div @click="onClick">my-cmp</div>
+            `
         })
-        Vue.component('cmp-b', {
-            inject: ['share'],
+        Vue.component('my-cmp1', {
             mounted () {
-                // console.log(this.$parent.share);//undefined
-                // console.log(this.$parent.share || this.$parent.$parent.share);//share
-                console.log(this.share);
+                this.$bus.$on('bus', (val) => {
+                    console.log(val);
+                })
             },
-            template: `<div><slot></slot></div>`
+            template: `
+                <div>my-cmp1</div>
+            `
         })
-        Vue.component('cmp-c', {
-            mounted () {
-                //获取根实例的name
-                console.log(this.$root.name);//shanshan
-            },
-            template: `<div></div>`
-        })
-
-
 
         const vm = new Vue({
             el: '#app',
             data: {
-                name: 'shanshan'
+               
+            },
+            methods: {
+                fn (name) {
+                    console.log(name);
+                }
             }
         })
     </script>
