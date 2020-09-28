@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>38.组件_插槽</title>
+    <title>39.组件_动态组件</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,88 +13,84 @@
 
 <body>
     <div id="app">
-       <!-- <my-cmp>这是写在组件标签内的文字</my-cmp> -->
-
-       <!-- 具名插槽 -->
-       <!-- 没有v-slot指令的，会放到不带name的slot里（默认） -->
-       <!-- <my-cmp>
-           <template v-slot:header>
-                <div>头部</div>
-           </template>
-           <p>主要内容</p>
-           <template v-slot:footer>
-                <div>底部</div>
-           </template>    
-       </my-cmp> -->
-
-       <!-- 作用域插槽 -->
-       <!--这里面的数据是全局作用域，想要使用子作用域，需要绑定子作用域的数据 -->
-       <my-cmp>
-            <!-- <template v-slot:default="slotProps">
-                {{ slotProps.user.name}}
-            </template> -->
-            <template v-slot:default="{user}">
-                {{ user.name }}
-            </template>
-       </my-cmp>
+        <!-- 动态组件 -->
+        <!-- <component is="cmp-b"></component> -->
+        <button
+            v-for="page in pages"
+            @click=" pageCmp = page.cmp"
+            :key="page.id"
+        >{{ page.name }} </button>
+        <br><br>
+        <!-- keep-alive失活的组件将会被缓存 -->
+        <keep-alive>
+            <component :is="pageCmp"></component>
+        </keep-alive>
+        
     </div>
     
     
 
     <script>
 
-        // 插槽
-        // Vue.component('my-cmp', {
-        //     template: `
-        //         <div>
-        //             XXXXXX
-        //             <slot></slot>
-        //         </div>
-        //     `
-        // })
-        // 具名插槽
-        // Vue.component('my-cmp', {
-        //     template: `
-        //         <div class="container">
-        //             <header>
-        //                 <slot name="header"></slot>
-        //             </header>
-        //             <main>
-        //                 <slot></slot>
-        //             </main>
-        //             <footer>
-        //                 <slot name="footer"></slot>
-        //             </footer>
-        //         </div>
-        //     `
-        // })
-        
-        //作用域插槽
-        Vue.component('my-cmp', {
+        // 动态组件
+        Vue.component('cmp-post', {
             data () {
                 return {
-                    user: {
-                        name: '杉杉',
-                        age: 17
-                    }
+                    postCmp: undefined,
+                    posts: [
+                        {title: '标题1', content: {
+                            template: `<div>内容1</div>`
+                        }, id: 11},
+                        {title: '标题2', content: {
+                            template: `<div>内容2</div>`
+                        }, id: 12},
+                        {title: '标题3', content: {
+                            template: `<div>内容3</div>`
+                        }, id: 13}
+                    ]
                 }
+            },
+            //created会在实例创建之后执行，如果要第一时间操作data中的数据，可以用这个
+            created () {
+                //默认数据
+                this.postCmp = this.posts[0].content;
+            },
+            activated () {
+                console.log('post activated: keep-alive组件激活时调用')
+            },
+            deactivated () {
+                console.log('post deactivated：keep-alive组件停用时调用')
             },
             template: `
                 <div>
-                    <slot :user="user"></slot>
+                    <button
+                        v-for="post in posts" 
+                        @click="postCmp = post.content"
+                        :key="post.id"
+                    >
+                        {{ post.title }}
+                    </button>
+                    <keep-alive>
+                        <component :is="postCmp"></component>
+                    </keep-alive>
                 </div>
             `
+        });
+        Vue.component('cmp-more', {
+            template: `
+                <div>more</div>
+            `
         })
-
-
-
-
 
 
         const vm = new Vue({
             el: '#app',
             data: {
-
+                pageCmp: 'cmp-post',
+                pages: [
+                    {name: '博客', cmp: 'cmp-post', id: 0},
+                    {name: '更多', cmp: 'cmp-more', id: 1},
+                ]
             }
         })
     </script>
