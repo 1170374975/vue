@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>36.组件_非Prop特性</title>
+    <title>38.组件_插槽</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,134 +13,88 @@
 
 <body>
     <div id="app">
-        <div :style="{fontSize: postFontSize + 'em'}">
-            <!-- 自定义事件enlarge-text -->
-            <!-- <blog-post 
-                v-for="post in posts" 
-                @enlarge-text="onEnlargeText"
-                :key="post.id" 
-                :post="post"
-            ></blog-post> -->
-            <blog-post 
-                v-for="post in posts" 
-                @click.native="postFontSize += 0.1"
-                :key="post.id" 
-                :post="post"
-            ></blog-post>
-        </div>
+       <!-- <my-cmp>这是写在组件标签内的文字</my-cmp> -->
 
-        <!-- input的聚焦和失焦事件 -->
-        <!-- <base-input
-            @focus.native="onFocus"
-            @blur.native="onBlur"
-        ></base-input> -->
-        <base-input 
-            @focus="onFocus"
-            @blur="onBlur"
-        ></base-input>
+       <!-- 具名插槽 -->
+       <!-- 没有v-slot指令的，会放到不带name的slot里（默认） -->
+       <!-- <my-cmp>
+           <template v-slot:header>
+                <div>头部</div>
+           </template>
+           <p>主要内容</p>
+           <template v-slot:footer>
+                <div>底部</div>
+           </template>    
+       </my-cmp> -->
 
-        <!--  双向数据绑定 -->
-        <base-input1 :value="name" @input="name = $event"></base-input1>
-        <base-input1 v-model="name"></base-input1>
-
-        <!-- <base-checkbox :checked="checked" @change="checked = $event"></base-checkbox> -->
-        <base-checkbox v-model="checked"></base-checkbox>
-        
-        <!-- v-bind 的修饰符.sync语法糖， :prop  @updata:prop -->
-        <!-- <base-input2 :value="name2" @update:value="name2 = $event"></base-input2> -->
-        <base-input2 :value.sync="name2" ></base-input2>
+       <!-- 作用域插槽 -->
+       <!--这里面的数据是全局作用域，想要使用子作用域，需要绑定子作用域的数据 -->
+       <my-cmp>
+            <!-- <template v-slot:default="slotProps">
+                {{ slotProps.user.name}}
+            </template> -->
+            <template v-slot:default="{user}">
+                {{ user.name }}
+            </template>
+       </my-cmp>
     </div>
     
+    
+
     <script>
-        Vue.component('base-input', {
-            template: `
-                <label>
-                    姓名：<input type="text" v-on="$listeners">            
-                </label>
-            `
-        })
-        // 双向数据绑定
-        Vue.component('base-input1', {
-            props: {
-                value: String
+
+        // 插槽
+        // Vue.component('my-cmp', {
+        //     template: `
+        //         <div>
+        //             XXXXXX
+        //             <slot></slot>
+        //         </div>
+        //     `
+        // })
+        // 具名插槽
+        // Vue.component('my-cmp', {
+        //     template: `
+        //         <div class="container">
+        //             <header>
+        //                 <slot name="header"></slot>
+        //             </header>
+        //             <main>
+        //                 <slot></slot>
+        //             </main>
+        //             <footer>
+        //                 <slot name="footer"></slot>
+        //             </footer>
+        //         </div>
+        //     `
+        // })
+        
+        //作用域插槽
+        Vue.component('my-cmp', {
+            data () {
+                return {
+                    user: {
+                        name: '杉杉',
+                        age: 17
+                    }
+                }
             },
             template: `
-                <label>
-                    姓名：<input type="text" :value="value" @input="$emit('input', $event.target.value)">            
-                </label>
+                <div>
+                    <slot :user="user"></slot>
+                </div>
             `
         })
 
-        Vue.component('base-checkbox', {
-            model: {
-                prop: 'checked', //绑定的特性
-                event: 'change' //绑定的事件
-            },
-            props: {
-                checked: Boolean
-            },
-            template: `
-                <input type="checkbox" 
-                    :checked="checked" 
-                    @change="$emit('change', $event.target.checked)"
-                >
-            `
-        })
 
-// v-bind 的修饰符.sync语法糖， :prop  @updata:prop
-        Vue.component('base-input2', {
-            props: {
-                value: String
-            },
-            template: `
-                <label>
-                    姓名：<input type="text" :value="value" @input="$emit('update:value', $event.target.value)">            
-                </label>
-            `
-        })
 
-        // 博文组件
-        //点击子组件的button -》告诉父组件增加字号--》可以更改控制字体大小的数据
-        //子组件内触发事件，在父组件内监听子组件的事件
-        //自定义事件enlarge-text
-        //Vue实例上有个方法：$emit(事件的name),子组件可以使用$emit触发父组件的自定义事件
 
-        Vue.component('blog-post', {
-            props: {
-                post: Object
-            },
-            template: `
-            <div>
-                <h3>{{ post.title }}</h3>
-                <button @click="$emit('enlarge-text', 0.2)">放大字号</button>
-                <div>{{ post.content }}</div>
-            </div>
-            `
-        })
+
+
         const vm = new Vue({
             el: '#app',
             data: {
-                postFontSize: 1.5, //字体大小，单位是em
-                posts: [
-                    {title: '标题0',content: '内容内容内容0', id: 0},
-                    {title: '标题1',content: '内容内容内容1', id: 1},
-                    {title: '标题2',content: '内容内容内容2', id: 2},
-                ],
-                name: 'shanshan',
-                checked: true,
-                name2: 'wangni'
-            },
-            methods: {
-                onEnlargeText(e) {
-                    console.log(e);
-                    this.postFontSize += e;
-                },
-                onFocus () {
-                    console.log('focus');
-                },
-                onBlur () {
-                    console.log('Blur');
-                }
+
             }
         })
     </script>
