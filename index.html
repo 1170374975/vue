@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>39.组件_动态组件</title>
+    <title>40.组件_处理边界情况</title>
     <script src="./axios.js"></script>
     <script src="./vue.js"></script>
 
@@ -13,18 +13,13 @@
 
 <body>
     <div id="app">
-        <!-- 动态组件 -->
-        <!-- <component is="cmp-b"></component> -->
-        <button
-            v-for="page in pages"
-            @click=" pageCmp = page.cmp"
-            :key="page.id"
-        >{{ page.name }} </button>
-        <br><br>
-        <!-- keep-alive失活的组件将会被缓存 -->
-        <keep-alive>
-            <component :is="pageCmp"></component>
-        </keep-alive>
+        <my-cmp>
+            <cmp-a>
+                <cmp-b>
+                    <cmp-c></cmp-c>
+                </cmp-b>
+            </cmp-a>
+        </my-cmp>
         
     </div>
     
@@ -32,65 +27,53 @@
 
     <script>
 
-        // 动态组件
-        Vue.component('cmp-post', {
-            data () {
+        // 处理边界情况
+        Vue.component('my-cmp', {
+            provide () {
                 return {
-                    postCmp: undefined,
-                    posts: [
-                        {title: '标题1', content: {
-                            template: `<div>内容1</div>`
-                        }, id: 11},
-                        {title: '标题2', content: {
-                            template: `<div>内容2</div>`
-                        }, id: 12},
-                        {title: '标题3', content: {
-                            template: `<div>内容3</div>`
-                        }, id: 13}
-                    ]
+                    share: this.share
                 }
             },
-            //created会在实例创建之后执行，如果要第一时间操作data中的数据，可以用这个
-            created () {
-                //默认数据
-                this.postCmp = this.posts[0].content;
+            data () {
+                return {
+                    share: 'share'
+                }
             },
-            activated () {
-                console.log('post activated: keep-alive组件激活时调用')
-            },
-            deactivated () {
-                console.log('post deactivated：keep-alive组件停用时调用')
-            },
-            template: `
-                <div>
-                    <button
-                        v-for="post in posts" 
-                        @click="postCmp = post.content"
-                        :key="post.id"
-                    >
-                        {{ post.title }}
-                    </button>
-                    <keep-alive>
-                        <component :is="postCmp"></component>
-                    </keep-alive>
-                </div>
-            `
-        });
-        Vue.component('cmp-more', {
-            template: `
-                <div>more</div>
-            `
+            template: `<div><slot></slot></div>`
         })
+        Vue.component('cmp-a', {
+            inject: ['share'],
+            mounted () {
+                //获取父级实例的share
+                // console.log(this.$parent.share);//share
+
+                console.log(this.share)
+            },
+            template: `<div><slot></slot></div>`
+        })
+        Vue.component('cmp-b', {
+            inject: ['share'],
+            mounted () {
+                // console.log(this.$parent.share);//undefined
+                // console.log(this.$parent.share || this.$parent.$parent.share);//share
+                console.log(this.share);
+            },
+            template: `<div><slot></slot></div>`
+        })
+        Vue.component('cmp-c', {
+            mounted () {
+                //获取根实例的name
+                console.log(this.$root.name);//shanshan
+            },
+            template: `<div></div>`
+        })
+
 
 
         const vm = new Vue({
             el: '#app',
             data: {
-                pageCmp: 'cmp-post',
-                pages: [
-                    {name: '博客', cmp: 'cmp-post', id: 0},
-                    {name: '更多', cmp: 'cmp-more', id: 1},
-                ]
+                name: 'shanshan'
             }
         })
     </script>
