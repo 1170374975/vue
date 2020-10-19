@@ -14,7 +14,15 @@ const routes = [
         }, 
     },
     {path: '/student', component: () => import('./views/Student')},
-    {path: '/about', component: () => import('./views/About')},
+    {
+        path: '/about', 
+        component: () => import('./views/About'),
+        // 路由独享守卫
+        beforeEnter(to, from, next) {
+            // console.log('beforeEnter');
+            next();
+        } 
+    },
     {
         path: '/activity', 
         component: () => import('./views/Activity'),
@@ -44,7 +52,45 @@ const routes = [
     },
 ];
 
-export default new VueRouter({
+// export default new VueRouter({
+//     mode: 'history',
+//     routes,
+// });
+
+// 导航守卫
+const router = new VueRouter({
     mode: 'history',
     routes,
 });
+// 在路由跳转前触发，执行的函数(一般被用于登录验证)
+// to目标路由对象，from即将要离开的路由对象，next三个参数中最重要的参数
+// 必须用next()
+router.beforeEach((to, from, next) => {
+    // console.log(to);  //目标路由对象
+    // console.log(from);//即将要离开的路由对象
+    // console.log('beforeEach');
+    next(); //正常跳转
+    //next(false);  //不让跳转，从哪来回哪去
+
+    // if(to.path === '/student') {
+    //     next('/about'); //填写跳转的路径
+    // } else {
+    //     next();
+    // }
+    // next(new Error('不让跳转'))  
+})
+// router.onError(err => {
+//     console.log(err.message);//错误跳转信息
+// })
+
+//和boforeEach类似路由跳转前触发。
+//在导航被确认之前，同时在所有组件内守卫和异步路由组件被解析之后，解析守卫就被调用
+router.beforeResolve((to, from, next) => {
+    // console.log('beforeResolve');
+    next();
+})
+// 路由跳转完成后触发。
+router.afterEach((to, from) => {
+    // console.log('afterEach');
+})
+export default router;

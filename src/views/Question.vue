@@ -35,7 +35,7 @@ export default {
     //同一个组件，只会调用一次mouted
     mounted () { //挂载的时候执行
         // this.getData();     
-        console.log(this.id);
+        // console.log(this.id);
         // console.log(this.name);   
     },
     computed: {
@@ -76,7 +76,7 @@ export default {
             // 拿到参数的对象id的值
             // console.log(this.$route.params);
             // const { id } = this.$route.params;
-            const {id} = this;
+            const {id} = this;  //这里可以不用$route.params
 
             this.$axios.get(`/question/${id}`).then(res => {
                 // console.log(res);
