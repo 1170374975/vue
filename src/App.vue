@@ -12,6 +12,8 @@
     </div>
     <div class="container">
       <router-view></router-view>
+      <!-- 命名视图 -->
+      <router-view name="student"></router-view>
     </div>
   </div>
 </template>

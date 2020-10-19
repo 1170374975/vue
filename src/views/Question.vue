@@ -18,6 +18,15 @@
 </template>
 <script>
 export default {
+    props: {
+        id: {
+            type: [String, Number],
+        },
+        // name: {
+        //     type: String,
+        //     default: 'question',
+        // }
+    },
     data () {
         return {
             question: null,
@@ -25,7 +34,9 @@ export default {
     },
     //同一个组件，只会调用一次mouted
     mounted () { //挂载的时候执行
-        // this.getData();        
+        // this.getData();     
+        console.log(this.id);
+        // console.log(this.name);   
     },
     computed: {
         otherQuestionList () {
@@ -51,9 +62,11 @@ export default {
     },
     methods: {
         handleClick (id) {
-            const {name} = this.$route;
+            // const {name} = this.$route;
+            // const {name} = this;
             this.$router.push({
-                name,
+                // name,
+                name : 'question',
                 params: {
                     id,
                 }
@@ -61,10 +74,12 @@ export default {
         },
         getData () {
             // 拿到参数的对象id的值
-            console.log(this.$route.params);
-            const { id } = this.$route.params;
+            // console.log(this.$route.params);
+            // const { id } = this.$route.params;
+            const {id} = this;
+
             this.$axios.get(`/question/${id}`).then(res => {
-                console.log(res);
+                // console.log(res);
                 this.question = res;
             })
         }

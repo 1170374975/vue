@@ -1,7 +1,7 @@
 <template>
     <ul>
         <router-link tag="li"
-            v-for="(question, index) in questionList"
+            v-for="(question) in questionList"
             :key="question.id"
             :to="{name: 'question', params: { id : question.id }}"
         > {{ question.title }} </router-link>
