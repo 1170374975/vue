@@ -71,6 +71,22 @@ const routes = [
 const router = new VueRouter({
     mode: 'history',
     routes,
+    scrollBehavior (to, from, savedPosition) {  //路由的滚动行为
+        if(savedPosition) {
+            //savedPosition 当且仅当 popstate 导航 (通过浏览器的 前进/后退 按钮触发) 时才可用
+            //是记录x和y坐标
+            return savedPosition;
+        } else {
+            // 判断要去到的目标路由对象中，是否有hash值
+            if(to.hash) { //如果在地址栏输入哈希值#a，则会跳转到#a的位置
+                return {selector: to.hash}//selector接收的值就是hash的锚点值
+            } else {
+                // 如果浏览器没有savedPosition的功能，且没有hash值，就回到顶部
+                return {x: 0, y: 0}
+            }
+            
+        }
+    },
 });
 // 跳转之前的全局守卫
 router.beforeEach((to, from, next) => {

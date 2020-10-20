@@ -11,7 +11,10 @@
       </div>
     </div>
     <div class="container">
-      <router-view></router-view>
+      <transition>
+        <router-view></router-view>
+      </transition>
+      
       <!-- 命名视图 -->
       <router-view name="student"></router-view>
     </div>
@@ -35,6 +38,21 @@ export default {
 
 <style>
 @import url('./assets/reset.css');
+#app{
+  /* 横向滚动条隐藏 */
+  /* overflow-x: hidden; */
+}
+/* 过渡 enter */
+.v-enter {
+  transform: translateX(1000px);
+}
+.v-enter-active {
+  transition: all .3s;
+}
+.v-enter-to {
+  transform: translateX(0);
+}
+
 .nav-box {
   display: flex;
   justify-content: space-around;
@@ -65,4 +83,6 @@ export default {
   padding-left: 100px;
   padding-right: 100px;
 }
+
+
 </style>
