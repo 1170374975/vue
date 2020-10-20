@@ -1,8 +1,7 @@
 import Vue from 'vue';
 
-// import VueRouter from 'vue-router';  //引入vue-router
-// 引入自己手写的路由
-import VueRouter from './vue-router/index';
+import VueRouter from 'vue-router';  //引入vue-router
+
 import Home from './views/Home'
 
 Vue.use(VueRouter); //只要使用了use，就会调用这个函数的install方法
@@ -17,7 +16,7 @@ const routes = [
 ]
 
 export default new VueRouter({
-    mode: history,
+    // mode: history,
     routes,
 });
 
