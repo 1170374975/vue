@@ -10,5 +10,24 @@ export default new Vuex.Store({
     state: {
         count: 0,
         studentList: [],//存放学生列表
+    },
+    getters: {//store的计算属性,相当于组件的computed
+        // 计算属性第一个参数就是state
+        // doubleCount (state) {
+        //     return state.count * 2;
+        // },
+        doubleCount: state => state.count * 2,
+
+        // addCount (state) {
+        //     // 这里也可以直接返回一个函数,通过不同的参数,去执行不同的功能
+        //     return function (num) {
+        //         return state.count + num;
+        //     }
+        // }
+        addCount: state => num => state.count + num, //上面的简写
+        
+        studentLength: state => state.studentList.length,
+        // 未成年列表,年龄小于18的学生,从列表里过滤出来,生成新的数组
+        studentJuveniles: state => state.studentList.filter(student => student.age < 18),
     }
 })
