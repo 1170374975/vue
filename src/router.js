@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from './views/Home.vue';
+import auth from './utils/auth';  //引入登录文件
 
 Vue.use(VueRouter);//使用路由
 const routes = [
@@ -18,10 +19,15 @@ const routes = [
         path: '/about', 
         component: () => import('./views/About'),
         // 路由独享守卫
-        beforeEnter(to, from, next) {
-            // console.log('beforeEnter');
-            next();
-        } 
+        // beforeEnter(to, from, next) {
+        //     // console.log('beforeEnter');
+        //     next();
+        // } ,
+        meta: { //路由元信息
+            //用于验证是否要登录的功能
+            requiresLogin: true,
+            //backAsk: true, //询问是否离开
+        }
     },
     {
         path: '/activity', 
@@ -30,6 +36,10 @@ const routes = [
             return {
                 name: 'academic',
             }
+        },
+        meta: {
+            requiresLogin: true,
+            //backAsk: true, //询问是否离开
         },
         children: [
             {path: 'academic', name: 'academic', component: () => import('./views/Academic')},
@@ -50,47 +60,43 @@ const routes = [
         }),
         component: () => import('./views/Question')
     },
+    {
+        path: '/login',
+        component: () => import('./views/Login'),
+    }
 ];
 
-// export default new VueRouter({
-//     mode: 'history',
-//     routes,
-// });
 
 // 导航守卫
 const router = new VueRouter({
     mode: 'history',
     routes,
 });
-// 在路由跳转前触发，执行的函数(一般被用于登录验证)
-// to目标路由对象，from即将要离开的路由对象，next三个参数中最重要的参数
-// 必须用next()
+// 跳转之前的全局守卫
 router.beforeEach((to, from, next) => {
-    // console.log(to);  //目标路由对象
-    // console.log(from);//即将要离开的路由对象
-    // console.log('beforeEach');
-    next(); //正常跳转
-    //next(false);  //不让跳转，从哪来回哪去
-
-    // if(to.path === '/student') {
-    //     next('/about'); //填写跳转的路径
-    // } else {
-    //     next();
-    // }
-    // next(new Error('不让跳转'))  
-})
-// router.onError(err => {
-//     console.log(err.message);//错误跳转信息
-// })
-
-//和boforeEach类似路由跳转前触发。
-//在导航被确认之前，同时在所有组件内守卫和异步路由组件被解析之后，解析守卫就被调用
-router.beforeResolve((to, from, next) => {
-    // console.log('beforeResolve');
-    next();
-})
-// 路由跳转完成后触发。
-router.afterEach((to, from) => {
-    // console.log('afterEach');
+    // console.log(to.meta.requiresLogin); //是否要登录
+    // console.log(to.matched);//数组，里面存放自身和父级的信息
+    
+    // some函数，一真为真，全假为假
+    const isRequiresLogin = to.matched.some(item => {
+        // console.log(item.meta.requiresLogin);
+        return item.meta.requiresLogin
+    });
+    // console.log(isRequiresLogin);
+    if(isRequiresLogin) {
+        // 验证有没有登录
+        const isLogin = auth.isLogin();
+        // console.log(isLogin);
+        if(isLogin) { //如果已经登录，直接跳转
+            next(); 
+        } else {//没有登录
+            //如果点击确定，window.confirm会返回true, 如果点击取消，会返回false
+            const isToLogin = window.confirm('要登录后才可以浏览，要去登录吗？');
+            //点击确定，到登录界面，点击取消，不跳转
+            isToLogin ? next('/login') : next(false);
+        }
+    }else {
+        next();
+    }
 })
 export default router;

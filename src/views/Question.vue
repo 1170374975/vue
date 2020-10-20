@@ -18,6 +18,18 @@
 </template>
 <script>
 export default {
+    beforeRouteUpdate (to, from, next) {
+        console.log(to);
+        console.log(from.params.id);
+        next();
+    },
+// 如果多个页面都有这个弹窗，可以用路由元信息,加上backAsk的值
+    // 导航离开该组件的对应路由时，调用
+    beforeRouteLeave (to, from, next) {
+        const isGo = window.confirm('真的要走吗，不再看看了？');
+        // 点击确定，离开。 取消，留在当前页
+        isGo ? next() : next(false);
+    },
     props: {
         id: {
             type: [String, Number],
@@ -34,7 +46,7 @@ export default {
     },
     //同一个组件，只会调用一次mouted
     mounted () { //挂载的时候执行
-        // this.getData();     
+        this.getData();     
         // console.log(this.id);
         // console.log(this.name);   
     },
@@ -62,6 +74,7 @@ export default {
     },
     methods: {
         handleClick (id) {
+            console.log(this.$router);
             // const {name} = this.$route;
             // const {name} = this;
             this.$router.push({
@@ -77,14 +90,13 @@ export default {
             // console.log(this.$route.params);
             // const { id } = this.$route.params;
             const {id} = this;  //这里可以不用$route.params
-
             this.$axios.get(`/question/${id}`).then(res => {
                 // console.log(res);
                 this.question = res;
             })
         }
     },
-    // 用侦听器，监控$route的值的变化
+    // 用侦听器，监控$route的值的变化,也可以用钩子函数beforeRouteUpdate
     watch: {
         '$route': {
             handler () {
