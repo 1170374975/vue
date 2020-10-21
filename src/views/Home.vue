@@ -4,6 +4,10 @@
         {{ count }}
         {{ $store.getters.doubleCount }}
         {{ $store.getters.addCount(3)}}
+        {{ obj }}
+
+        <!-- 双向数据绑定，用计算属性setter实现 -->
+        <input v-model="msg"> {{ msg }}
     </div>
 </template>
 
@@ -14,6 +18,8 @@
 import {mapState, mapGetters} from 'vuex';
 //数组里是想要获取到状态的名字,函数执行，会返回计算属性的对象，相当于写到computed里
 // console.log(mapState(['count']));
+
+import {COUNT_INCREMENT, CHANGE_OBJ, UPDATE_MSG} from '@/store/mutation-types';
 
 export default {
     data () {
@@ -33,17 +39,41 @@ export default {
     computed: {
         // 获取到count的值
         ...mapState(['count']),
+        ...mapState(['obj']),
         // a () { .....  }
         //辅组函数,获取到store的计算属性
         ...mapGetters(['addCount', 'doubleCount']),
+
+        // 双向绑定的计算属性
+        msg: {
+            get () {
+                return this.$store.state.msg;
+            },
+            set (value) {
+                console.log(value);
+                // 提交UPDATE_MSG的值
+                this.$store.commit(UPDATE_MSG, {value});
+            }
+        }
     },
     created () {
         console.log(this.$store.state.count);
     },
     methods: {
         handleClick () {
-            this.$store.state.count++;
-        }
+            //提交名为countIncrement的mutations
+            const num = Math.floor(Math.random() * 100);
+            // mutation函数，传递的第一个参数是state，第二个参数是：通过commit（提交）执行时传递的，一般是对象
+            this.$store.commit(COUNT_INCREMENT, { num }); 
+
+            // this.$store.commit({
+            //     type: 'countIncrement',
+            //     num,
+            // })
+            this.$store.commit(CHANGE_OBJ);
+        },
+        
     }
 }
+
 </script>
