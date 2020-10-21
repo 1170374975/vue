@@ -64,12 +64,13 @@ export default {
             //提交名为countIncrement的mutations
             const num = Math.floor(Math.random() * 100);
             // mutation函数，传递的第一个参数是state，第二个参数是：通过commit（提交）执行时传递的，一般是对象
-            this.$store.commit(COUNT_INCREMENT, { num }); 
+            // this.$store.commit(COUNT_INCREMENT, { num }); 
 
-            // this.$store.commit({
-            //     type: 'countIncrement',
-            //     num,
-            // })
+            // 分发action ，调用dispatch方法,分发countIncrement函数
+            this.$store.dispatch('countIncrement', {num}).then(() => {
+                alert('count已增加')
+            })
+           
             this.$store.commit(CHANGE_OBJ);
         },
         

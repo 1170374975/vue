@@ -24,14 +24,6 @@ export default new Vuex.Store({
     },
     mutations: {
         // mutation函数，传递的第一个参数是state，第二个参数是：通过commit（提交）执行时传递的，一般是对象
-        countIncrement(state, {num}) {
-            state.count += num;
-        },
-
-        // countIncrement(state, payload) {
-        //     console.log(payload);
-        //     state.count += payload.num;
-        // }
 
         // 使用常量代替mutation事件类型, 将变量作为函数的名字，放到[]里
         [COUNT_INCREMENT] (state, {num}) {
@@ -44,6 +36,25 @@ export default new Vuex.Store({
         [UPDATE_MSG] (state, {value}) {
             state.msg = value;
         }
+    },
+    actions: {
+        // 会去接收一个参数，第一个参数是context 上下文对象，是和store实例具有相同的方法和属性的对象,通过context找到commit方法提交mutation
+        // 第二个参数是从分发函数处传递过来的
+        // countIncrement (context, payload) {
+        //     setTimeout(() => {
+        //         context.commit(COUNT_INCREMENT, payload);
+        //     }, 1000)
+        // }
+        countIncrement (context, payload) {
+            // 用promise可以知道action什么时候结束
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    context.commit(COUNT_INCREMENT, payload);
+                    resolve();
+                }, 1000)
+            })
+        }
+    
     }
 })
 
